@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/axios";
 
-const AdminLocationDashboard = () => {
+const AdminLocationManagement = () => {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -74,4 +74,4 @@ const AdminLocationDashboard = () => {
   );
 };
 
-export default AdminLocationDashboard;
+export default AdminLocationManagement;
