@@ -32,7 +32,9 @@ urlpatterns = [
     path("reservations/<int:pk>/", views.ReservationDetailView.as_view(), name="reservation-detail"),
     path('users/<int:id>/reactivate/', views.ReactivateUserView.as_view(), name='reactivate-user'),
     path('locations/<int:pk>/', views.ParkingLocationDetailView.as_view(), name='location-detail'),
-    
+    path('slots/<int:pk>/lock/', views.LockSlotView.as_view(), name='lock-slot'),
+    path('slots/<int:pk>/unlock/', views.UnlockSlotView.as_view(), name='unlock-slot'),
+    path('locations-dashboard/', views.AdminLocationDashboardView.as_view(), name='admin-location-dashboard'),
 
     
 ]

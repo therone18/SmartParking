@@ -36,11 +36,18 @@ class ParkingLocationSerializer(serializers.ModelSerializer):
 class ParkingSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParkingSlot
-        fields = ['id', 'location', 'floorzone_number', 'is_available']
+        fields = ['id', 'location', 'floorzone_number', 'is_available', 'locked']
         read_only_fields = ['slot_id']
         location = serializers.CharField(required=True)
         slot_id = serializers.CharField(required=True)
         floorzone_number = serializers.CharField(required=True)
+        
+class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):
+    slots = ParkingSlotSerializer(many=True, source='parkingslot_set')
+
+    class Meta:
+        model = ParkingLocation
+        fields = ['id', 'name', 'address', 'google_maps_url', 'slots']
         
 class SlotUtilizationSerializer(serializers.Serializer):
     location_id = serializers.IntegerField()
@@ -99,7 +106,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         model = Reservation
         fields = [
             'id', 'slot', 'start_time', 'end_time', 'location', 'vehicle_make',
-            'vehicle_model', 'plate_number', 'vehicle_type', 'status'
+            'vehicle_model', 'plate_number', 'vehicle_type', 'status', 'receipt'
         ]
 
     def validate(self, data):

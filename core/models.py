@@ -24,6 +24,10 @@ class ParkingSlot(models.Model):
     slot_id = models.UUIDField(default=uuid.uuid4, editable=False, null=True, blank=True, unique=True)
     floorzone_number = models.CharField(max_length=10, null=True, blank=True)
     is_available = models.BooleanField(default=True)
+    locked = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"{self.location.name} - {self.slot_id}"
 
 
 

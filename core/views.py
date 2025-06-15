@@ -18,7 +18,8 @@ from .serializers import (
     ParkingLocationSerializer,
     ParkingSlotSerializer,
     ReservationSerializer,
-    SlotUtilizationSerializer
+    SlotUtilizationSerializer,
+    ParkingLocationWithSlotsSerializer
 )
 
 class RegisterView(generics.CreateAPIView):
@@ -516,3 +517,29 @@ class UploadReceiptView(APIView):
         reservation.save()
 
         return Response({'detail': 'Receipt uploaded successfully.'}, status=status.HTTP_200_OK)
+
+class LockSlotView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, pk):
+        slot = generics.get_object_or_404(ParkingSlot, pk=pk)
+        slot.locked = True
+        slot.save()
+        return Response({"detail": "Slot locked successfully."}, status=status.HTTP_200_OK)
+
+class UnlockSlotView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, pk):
+        slot = generics.get_object_or_404(ParkingSlot, pk=pk)
+        slot.locked = False
+        slot.save()
+        return Response({"detail": "Slot unlocked successfully."}, status=status.HTTP_200_OK)
+    
+
+
+class AdminLocationDashboardView(generics.ListAPIView):
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = ParkingLocationWithSlotsSerializer
+    queryset = ParkingLocation.objects.all()
+
