@@ -93,7 +93,8 @@ class ParkingLocationUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 
 class ReservationSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
-    
+    user_full_name = serializers.SerializerMethodField()
+
     slot = serializers.PrimaryKeyRelatedField(queryset=ParkingSlot.objects.all(), required=True)
     start_time = serializers.DateTimeField(required=True)
     end_time = serializers.DateTimeField(required=True)
@@ -106,7 +107,8 @@ class ReservationSerializer(serializers.ModelSerializer):
         model = Reservation
         fields = [
             'id', 'slot', 'start_time', 'end_time', 'location', 'vehicle_make',
-            'vehicle_model', 'plate_number', 'vehicle_type', 'status', 'receipt'
+            'vehicle_model', 'plate_number', 'vehicle_type', 'status', 'receipt',
+            'user_full_name'
         ]
 
     def validate(self, data):
@@ -114,11 +116,15 @@ class ReservationSerializer(serializers.ModelSerializer):
         if slot and not slot.is_available:
             raise serializers.ValidationError("Selected slot is not available.")
         return data
-    
+
     def get_location(self, obj):
         location = obj.slot.location if obj.slot else None
         if location:
             return ParkingLocationSerializer(location).data
         return None
+
+    def get_user_full_name(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}" if obj.user else "N/A"
+
 
 

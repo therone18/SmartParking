@@ -33,10 +33,11 @@ class ParkingSlot(models.Model):
 
 class Reservation(models.Model):
     STATUS_CHOICES = [
-        ('Active', 'Active'),
+        
         ('Pending', 'Pending'),
         ('Processing', 'Processing'),
         ('Reserved', 'Reserved'),
+        ('Active', 'Active'),
         ('Overdue', 'Overdue'),
         ('Checked-out', 'Checked-out'),
         ('Cancelled', 'Cancelled'),

@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -8,7 +8,7 @@ from django.db.models import Count
 from django.utils.timezone import now, timedelta
 from rest_framework.parsers import MultiPartParser
 from django.shortcuts import get_object_or_404
-
+from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from .models import ParkingLocation, ParkingSlot, Reservation
 from django.utils.timezone import now
@@ -215,6 +215,12 @@ class ReservationCheckOutView(APIView):
 
 
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status, permissions
+from core.models import Reservation
+
+
 class ReservationStatusUpdateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -224,7 +230,7 @@ class ReservationStatusUpdateView(APIView):
         except Reservation.DoesNotExist:
             return Response({"error": "Reservation not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Permission check: allow only owner or admin
+        # Permission check
         if request.user != reservation.user and not request.user.is_staff:
             return Response({"error": "You do not have permission to update this reservation."}, status=403)
 
@@ -243,7 +249,6 @@ class ReservationStatusUpdateView(APIView):
         reservation.status = new_status
         reservation.save()
 
-        # Free the slot if status is "Cancelled" or "Complete"
         if new_status in ["Cancelled", "Complete"]:
             reservation.slot.is_available = True
             reservation.slot.save()
@@ -252,6 +257,9 @@ class ReservationStatusUpdateView(APIView):
             "message": f"Status updated to '{new_status}'.",
             "status": reservation.status
         }, status=200)
+
+
+
 
 
 
@@ -543,3 +551,25 @@ class AdminLocationDashboardView(generics.ListAPIView):
     serializer_class = ParkingLocationWithSlotsSerializer
     queryset = ParkingLocation.objects.all()
 
+class ApproveReservationView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, pk):
+        try:
+            reservation = Reservation.objects.get(pk=pk)
+        except Reservation.DoesNotExist:
+            return Response({'detail': 'Reservation not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Status must be "Processing"
+        if reservation.status != "Processing":
+            return Response({'detail': 'Only "Processing" reservations can be approved.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Must have uploaded receipt
+        if not reservation.receipt:
+            return Response({'detail': 'Cannot approve reservation without a receipt.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        reservation.status = "Reserved"
+        reservation.save()
+
+        serializer = ReservationSerializer(reservation)
+        return Response(serializer.data, status=status.HTTP_200_OK)

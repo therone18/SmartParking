@@ -35,7 +35,7 @@ urlpatterns = [
     path('slots/<int:pk>/lock/', views.LockSlotView.as_view(), name='lock-slot'),
     path('slots/<int:pk>/unlock/', views.UnlockSlotView.as_view(), name='unlock-slot'),
     path('locations-dashboard/', views.AdminLocationDashboardView.as_view(), name='admin-location-dashboard'),
-
+    path('reservations/<int:pk>/approve/', views.ApproveReservationView.as_view(), name='reservation-approve'),
     
 ]
 
