@@ -5,6 +5,7 @@ const AdminUserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch all user accounts
   const fetchUsers = async () => {
     try {
       const res = await axiosInstance.get("/api/users/");
@@ -16,26 +17,28 @@ const AdminUserManagement = () => {
     }
   };
 
+  // Toggle user status (active/inactive)
   const handleToggle = async (userId) => {
     try {
       await axiosInstance.patch(`/api/admin/users/${userId}/toggle/`);
-      fetchUsers(); // refresh
+      fetchUsers(); // Refresh user list after update
     } catch (err) {
       console.error("Error toggling user status:", err);
       alert("Failed to update user status.");
     }
   };
 
+  // Fetch users on initial page load
   useEffect(() => {
     fetchUsers();
   }, []);
 
   if (loading) return <div className="p-6">Loading users...</div>;
 
-  console.log(users)
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">User Management</h1>
+
       <table className="min-w-full bg-white rounded shadow">
         <thead className="bg-gray-200 text-left text-gray-700">
           <tr>
@@ -46,12 +49,14 @@ const AdminUserManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((u) => (
-            <tr key={u.id} className="border-t">
-              <td className="px-4 py-2">{u.first_name + " " + u.last_name}</td>
-              <td className="px-4 py-2">{u.email}</td>
+          {users.map((user) => (
+            <tr key={user.id} className="border-t">
               <td className="px-4 py-2">
-                {u.is_active ? (
+                {user.first_name} {user.last_name}
+              </td>
+              <td className="px-4 py-2">{user.email}</td>
+              <td className="px-4 py-2">
+                {user.is_active ? (
                   <span className="text-green-600">Active</span>
                 ) : (
                   <span className="text-red-500">Inactive</span>
@@ -59,14 +64,14 @@ const AdminUserManagement = () => {
               </td>
               <td className="px-4 py-2">
                 <button
-                  onClick={() => handleToggle(u.id)}
-                  className={`px-3 py-1 rounded ${
-                    u.is_active
+                  onClick={() => handleToggle(user.id)}
+                  className={`px-3 py-1 rounded text-white ${
+                    user.is_active
                       ? "bg-red-500 hover:bg-red-600"
                       : "bg-green-500 hover:bg-green-600"
-                  } text-white`}
+                  }`}
                 >
-                  {u.is_active ? "Deactivate" : "Reactivate"}
+                  {user.is_active ? "Deactivate" : "Reactivate"}
                 </button>
               </td>
             </tr>

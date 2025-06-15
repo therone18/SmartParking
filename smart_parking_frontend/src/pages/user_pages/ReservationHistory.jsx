@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../services/axios";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../services/axios";
 
 const ReservationHistory = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch user's completed or cancelled reservations
   useEffect(() => {
     const fetchReservations = async () => {
       try {
         const response = await axiosInstance.get("/api/reservations/me/");
-        // Filter to only completed or canceled
-        const filtered = response.data.filter(res =>
-          res.status === "Complete" || res.status === "Cancelled"
+        const filtered = response.data.filter(
+          (res) => res.status === "Complete" || res.status === "Cancelled"
         );
         setReservations(filtered);
       } catch (error) {
@@ -25,10 +25,21 @@ const ReservationHistory = () => {
     fetchReservations();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading reservation history...</p>;
+  if (loading) {
+    return (
+      <p className="text-center mt-10 text-gray-600">
+        Loading reservation history...
+      </p>
+    );
+  }
 
-  if (reservations.length === 0)
-    return <p className="text-center mt-10 text-gray-600">No past reservations found.</p>;
+  if (reservations.length === 0) {
+    return (
+      <p className="text-center mt-10 text-gray-600">
+        No past reservations found.
+      </p>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto mt-10 bg-white p-6 rounded shadow">
@@ -40,10 +51,30 @@ const ReservationHistory = () => {
             key={res.id}
             className="border rounded p-4 bg-gray-50 hover:bg-gray-100 transition"
           >
-            <p><strong>Location:</strong> {res.location_name}</p>
-            <p><strong>Slot:</strong> {res.slot_number || "N/A"}</p>
-            <p><strong>Status:</strong> <span className={`capitalize ${res.status === "completed" ? "text-green-600" : "text-red-600"}`}>{res.status}</span></p>
-            <p><strong>Reserved At:</strong> {new Date(res.created_at).toLocaleString()}</p>
+            <p>
+              <strong>Location:</strong> {res.location?.name || "Unknown"}
+            </p>
+            <p>
+              <strong>Slot:</strong> {res.slot || "N/A"}
+            </p>
+            <p>
+              <strong>Status:</strong>{" "}
+              <span
+                className={`capitalize font-semibold ${
+                  res.status === "Complete"
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {res.status}
+              </span>
+            </p>
+            <p>
+              <strong>Reserved At:</strong>{" "}
+              {res.created_at
+                ? new Date(res.created_at).toLocaleString()
+                : "N/A"}
+            </p>
 
             <Link
               to={`/reservations/${res.id}`}

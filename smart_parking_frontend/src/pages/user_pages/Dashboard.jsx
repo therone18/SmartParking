@@ -3,9 +3,9 @@ import axiosInstance from "../../services/axios";
 
 const Dashboard = () => {
   const [reservations, setReservations] = useState([]);
-  const [profile, setProfile] = useState([]);
-  const user = { firstName: "Therone", lastName: "Smith" };
+  const [profile, setProfile] = useState({});
 
+  // Fetch user profile and reservation data on mount
   useEffect(() => {
     const getData = async () => {
       try {
@@ -26,13 +26,20 @@ const Dashboard = () => {
     getData();
   }, []);
 
+  // Handle user logout
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Welcome back, {profile.first_name}!
+          Welcome back, {profile.first_name || "User"}!
         </h1>
 
+        {/* Reservation List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-lg font-semibold mb-2">Active Reservations</h2>
@@ -63,30 +70,27 @@ const Dashboard = () => {
             </ul>
           </div>
 
+          {/* Quick Actions */}
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
             <div className="space-y-3">
               <button className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded shadow">
                 Make a Reservation
               </button>
-              <button className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded shadow"
-              onClick={() =>{
-                  window.location.href = "/myreservations";
-                }}>
+              <button
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded shadow"
+                onClick={() => (window.location.href = "/myreservations")}
+              >
                 View My Reservations
               </button>
-              <button className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded shadow"
-                onClick={() =>{
-                  window.location.href = "/profile";
-                }}
-                >
+              <button
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded shadow"
+                onClick={() => (window.location.href = "/profile")}
+              >
                 Go to My Profile
               </button>
               <button
-                onClick={() => {
-                  localStorage.clear();
-                  window.location.href = "/";
-                }}
+                onClick={handleLogout}
                 className="w-full bg-red-100 hover:bg-red-200 text-red-600 py-2 rounded shadow"
               >
                 Logout
@@ -95,6 +99,7 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Footer */}
         <footer className="text-sm text-gray-500 text-center mt-8">
           &copy; 2025 Smart Parking App | TJBA
         </footer>

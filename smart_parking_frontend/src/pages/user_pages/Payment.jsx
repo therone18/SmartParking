@@ -3,10 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axios";
 
 const Payment = () => {
-  const { id } = useParams(); // Reservation ID
-  const [receipt, setReceipt] = useState(null);
+  const { id } = useParams(); // Reservation ID from URL
   const navigate = useNavigate();
+  const [receipt, setReceipt] = useState(null);
 
+  // Handle file submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -19,14 +20,13 @@ const Payment = () => {
     formData.append("receipt", receipt);
 
     try {
-      await axiosInstance.patch(
-        `/api/reservations/${id}/upload-receipt/`,
-        formData
-      );
+      await axiosInstance.patch(`/api/reservations/${id}/upload-receipt/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      alert(
-        "Receipt uploaded successfully! Your reservation is now being processed."
-      );
+      alert("Receipt uploaded successfully! Your reservation is now being processed.");
       navigate("/dashboard");
     } catch (error) {
       console.error("Error uploading receipt:", error);
@@ -36,9 +36,9 @@ const Payment = () => {
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white p-8 rounded shadow">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">
-        Upload Payment Receipt
-      </h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Upload Payment Receipt</h1>
+
+      {/* Simulated QR Code Section */}
       <div className="mb-4">
         <img
           src="/assets/images/sample_qr.png"
@@ -46,22 +46,24 @@ const Payment = () => {
           className="w-64 mx-auto mb-4"
         />
         <p className="text-center text-gray-600">
-          Scan the QR code above to make your payment. Then upload your receipt
-          below.
+          Scan the QR code above to make your payment. Then upload your receipt below.
         </p>
-        <p className="text-center text-red-600">*This is only a sample QR*</p>
+        <p className="text-center text-red-600 font-medium">*This is only a sample QR*</p>
       </div>
+
+      {/* Upload Form */}
       <form onSubmit={handleSubmit}>
         <input
           type="file"
           accept="image/*"
           onChange={(e) => setReceipt(e.target.files[0])}
           required
-          className="w-full mb-4"
+          className="w-full mb-4 file:border file:border-gray-300 file:py-1 file:px-2"
         />
+
         <button
           type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
         >
           Upload Receipt
         </button>

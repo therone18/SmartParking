@@ -3,18 +3,21 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../services/axios';
 
 const LocationDetails = () => {
-  const { id } = useParams(); // Location ID from URL
+  const { id } = useParams(); // Extract location ID from URL
   const navigate = useNavigate();
+
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Fetch location details from API on component mount
   useEffect(() => {
     const fetchLocation = async () => {
       try {
         const res = await axiosInstance.get(`/api/locations/${id}/`);
         setLocation(res.data);
       } catch (err) {
+        console.error("Error fetching location details:", err);
         setError('Failed to fetch location details.');
       } finally {
         setLoading(false);
@@ -24,6 +27,7 @@ const LocationDetails = () => {
     fetchLocation();
   }, [id]);
 
+  // Show loading spinner
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -32,6 +36,7 @@ const LocationDetails = () => {
     );
   }
 
+  // Show error message
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -40,13 +45,18 @@ const LocationDetails = () => {
     );
   }
 
+  // Display location details
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">{location.name}</h1>
+        <h1 className="text-3xl font-bold mb-4 text-gray-800">
+          {location.name || "Location Name"}
+        </h1>
+
         <p className="text-gray-700 mb-2">
-          <span className="font-medium">Address:</span> {location.address}
+          <span className="font-medium">Address:</span> {location.address || "No address provided"}
         </p>
+
         {location.google_maps_link && (
           <p className="text-blue-600 mb-4">
             <a
@@ -60,6 +70,7 @@ const LocationDetails = () => {
           </p>
         )}
 
+        {/* Navigation Button */}
         <div className="mt-6">
           <button
             onClick={() => navigate('/dashboard')}

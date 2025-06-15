@@ -6,16 +6,15 @@ const AdminReservationManagement = () => {
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
 
-
-  
+  // Fetch all reservations on component mount
   useEffect(() => {
     fetchReservations();
   }, []);
 
+  // Fetch reservation data from backend
   const fetchReservations = async () => {
     try {
       const res = await axiosInstance.get("/api/reservations/all/");
-      console.log(res.data)
       setReservations(res.data);
     } catch (err) {
       console.error("Failed to fetch reservations", err);
@@ -24,32 +23,36 @@ const AdminReservationManagement = () => {
     }
   };
 
+  // Approve a reservation if it has a receipt
   const handleApprove = async (id, receipt) => {
     if (!receipt) {
       alert("Cannot approve without receipt.");
       return;
     }
+
     try {
-      await axios.post(`/api/reservations/${id}/approve/`);
-      fetchReservations(); // refresh data
+      await axiosInstance.post(`/api/reservations/${id}/approve/`);
+      fetchReservations(); // Refresh data after update
     } catch (err) {
       console.error("Approval failed:", err);
       alert("Failed to approve reservation.");
     }
   };
 
+  // Cancel a reservation
   const handleCancel = async (id) => {
     try {
-      await axios.put(`/api/reservations/${id}/status/`, {
+      await axiosInstance.put(`/api/reservations/${id}/status/`, {
         status: "Cancelled",
       });
-      fetchReservations(); // refresh data
+      fetchReservations(); // Refresh data after update
     } catch (err) {
       console.error("Cancellation failed:", err);
       alert("Failed to cancel reservation.");
     }
   };
 
+  // Filter reservations based on selected status
   const filteredReservations =
     filter === "All"
       ? reservations
@@ -75,6 +78,7 @@ const AdminReservationManagement = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Reservation Management</h1>
 
+      {/* Filter Dropdown */}
       <div className="mb-4">
         <label className="mr-2 font-semibold">Filter by Status:</label>
         <select
@@ -83,11 +87,14 @@ const AdminReservationManagement = () => {
           className="border rounded px-2 py-1"
         >
           {statusOptions.map((status) => (
-            <option key={status}>{status}</option>
+            <option key={status} value={status}>
+              {status}
+            </option>
           ))}
         </select>
       </div>
 
+      {/* Reservation Table */}
       {filteredReservations.length === 0 ? (
         <p>No reservations found.</p>
       ) : (
@@ -112,11 +119,13 @@ const AdminReservationManagement = () => {
                   <td className="py-2 px-4">{r.slot}</td>
                   <td className="py-2 px-4">{r.location?.name}</td>
                   <td className="py-2 px-4">
-                    {new Date(r.start_time).toLocaleString()} <br />
+                    {new Date(r.start_time).toLocaleString()}
+                    <br />
                     → {new Date(r.end_time).toLocaleString()}
                   </td>
                   <td className="py-2 px-4">
-                    {r.vehicle_make} {r.vehicle_model} <br />
+                    {r.vehicle_make} {r.vehicle_model}
+                    <br />
                     {r.plate_number} ({r.vehicle_type})
                   </td>
                   <td className="py-2 px-4">{r.status}</td>
