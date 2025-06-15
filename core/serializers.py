@@ -49,6 +49,13 @@ class SlotUtilizationSerializer(serializers.Serializer):
     total_slots = serializers.IntegerField()
     reservations = serializers.IntegerField()
     utilization_rate = serializers.FloatField()  # As a decimal (e.g. 0.75 for 75%)
+
+class ParkingLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParkingLocation
+        fields = [
+            'id', 'name', 'address', 
+        ]
         
 class ParkingLocationUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ParkingLocation.objects.all()
@@ -78,6 +85,8 @@ class ParkingLocationUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         
 
 class ReservationSerializer(serializers.ModelSerializer):
+    location = serializers.SerializerMethodField()
+    
     slot = serializers.PrimaryKeyRelatedField(queryset=ParkingSlot.objects.all(), required=True)
     start_time = serializers.DateTimeField(required=True)
     end_time = serializers.DateTimeField(required=True)
@@ -89,8 +98,8 @@ class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = [
-            'id', 'slot', 'start_time', 'end_time', 'vehicle_make',
-            'vehicle_model', 'plate_number', 'vehicle_type'
+            'id', 'slot', 'start_time', 'end_time', 'location', 'vehicle_make',
+            'vehicle_model', 'plate_number', 'vehicle_type', 'status'
         ]
 
     def validate(self, data):
@@ -98,5 +107,11 @@ class ReservationSerializer(serializers.ModelSerializer):
         if slot and not slot.is_available:
             raise serializers.ValidationError("Selected slot is not available.")
         return data
+    
+    def get_location(self, obj):
+        location = obj.slot.location if obj.slot else None
+        if location:
+            return ParkingLocationSerializer(location).data
+        return None
 
 

@@ -7,10 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:user": "cross-env VITE_ROLE=user VITE_PORT=3000 vite",
+    "dev:admin": "cross-env VITE_ROLE=admin VITE_PORT=3001 vite"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.10"
@@ -20,6 +24,7 @@
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
+    "cross-env": "^7.0.3",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",

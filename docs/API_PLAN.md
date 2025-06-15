@@ -6,6 +6,7 @@
 | `/api/profile/update/`                     | PUT    | Yes           | Update user's profile                                     |
 | `/api/locations/`                          | GET    | No            | List all parking locations                                |
 | `/api/locations/`                          | POST   | Admin only    | Create new location                                       |
+| `/api/locations/<id>/`                     | GET    | Yes           | Get Location Details                                      |
 | `/api/locations/search/?q=`                | GET    | No            | Search parking locations                                  |
 | `/api/locations/<id>/`                     | PUT    | Admin only    | Update parking location                                   |
 | `/api/locations/<id>/`                     | DELETE | Admin only    | Delete parking location                                   |

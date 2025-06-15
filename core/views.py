@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAdminUser, AllowAny
 from django.db import connection
 from django.db.models import Count
 from django.utils.timezone import now, timedelta
+from rest_framework.parsers import MultiPartParser
+from django.shortcuts import get_object_or_404
 
 from django.contrib.auth.models import User
 from .models import ParkingLocation, ParkingSlot, Reservation
@@ -46,6 +48,11 @@ class ParkingLocationListCreateView(generics.ListCreateAPIView):
         if self.request.method == 'POST':
             return [permissions.IsAdminUser()]
         return [permissions.AllowAny()]
+    
+class ParkingLocationDetailView(generics.RetrieveAPIView):
+    queryset = ParkingLocation.objects.all()
+    serializer_class = ParkingLocationSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
 class ParkingLocationUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ParkingLocation.objects.all()
@@ -107,6 +114,10 @@ class ReservationDetailView(RetrieveAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Reservation.objects.filter(user=user)
 
 
 class MyReservationsView(generics.ListAPIView):
@@ -484,3 +495,24 @@ class ReactivateUserView(APIView):
         except User.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
         
+
+class UploadReceiptView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, pk):
+        reservation = get_object_or_404(Reservation, pk=pk)
+
+        # Ensure the reservation belongs to the logged-in user
+        if reservation.user != request.user:
+            return Response({'detail': 'Not allowed.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Ensure the file is in the request
+        if 'receipt' not in request.FILES:
+            return Response({'detail': 'No receipt uploaded.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save the receipt
+        reservation.receipt = request.FILES['receipt']
+        reservation.status = 'processing'  # If you have status tracking
+        reservation.save()
+
+        return Response({'detail': 'Receipt uploaded successfully.'}, status=status.HTTP_200_OK)

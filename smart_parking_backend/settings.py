@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'core',
     'django_cron',
-    
 ]
 
 MIDDLEWARE = [
@@ -88,6 +87,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'smart_parking_backend.wsgi.application'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Database

@@ -5,6 +5,7 @@ import uuid
 class ParkingLocation(models.Model):
     name = models.CharField(max_length=100)
     address = models.TextField()
+    slots = models.PositiveSmallIntegerField()
     google_maps_url = models.URLField(blank=True, null=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
@@ -24,22 +25,27 @@ class ParkingSlot(models.Model):
     floorzone_number = models.CharField(max_length=10, null=True, blank=True)
     is_available = models.BooleanField(default=True)
 
-STATUS_CHOICES = [
-    ('Active', 'Active'),
-    ('Reserved', 'Reserved'),
-    ('Overdue', 'Overdue'),
-    ('Cancelled', 'Cancelled'),
-    ('Complete', 'Complete'),
-]
+
 
 class Reservation(models.Model):
+    STATUS_CHOICES = [
+        ('Active', 'Active'),
+        ('Pending', 'Pending'),
+        ('Processing', 'Processing'),
+        ('Reserved', 'Reserved'),
+        ('Overdue', 'Overdue'),
+        ('Checked-out', 'Checked-out'),
+        ('Cancelled', 'Cancelled'),
+        ('Complete', 'Complete'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     slot = models.ForeignKey(ParkingSlot, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     last_park_in = models.DateTimeField(null=True, blank=True)
     last_park_out = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    receipt = models.ImageField(upload_to='receipts/', null=True, blank=True)
 
     # Car info (now required)
     vehicle_make = models.CharField(max_length=50)

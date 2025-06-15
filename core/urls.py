@@ -6,9 +6,6 @@ urlpatterns = [
     path('locations/', views.ParkingLocationListCreateView.as_view()),
     path('reservations/', views.ReservationCreateView.as_view()),
     path('reservations/me/', views.MyReservationsView.as_view()),
-    path('reservations/<int:pk>/', views.ReservationDeleteView.as_view()),
-    path('reservations/all/', views.AllReservationsView.as_view()),
-    path('locations/<int:pk>/',views.ParkingLocationUpdateDeleteView.as_view(), name='location-detail'),
     path('locations/<int:id>/users/', views.UsersByLocationView.as_view(), name='location-users'),
     path('locations/<int:pk>/reservations/', views.LocationReservationsView.as_view(), name='location-reservations'),
     path('locations/search/', views.ParkingLocationSearchView.as_view(), name='location-search'),
@@ -30,10 +27,13 @@ urlpatterns = [
     path('reservations/<int:pk>/in/', views.ReservationCheckInView.as_view(), name='reservation-checkin'),
     path('reservations/<int:pk>/out/', views.ReservationCheckOutView.as_view(), name='reservation-check-out'),
     path('reservations/<int:pk>/status/', views.ReservationStatusUpdateView.as_view(), name='reservation-status-update'),
-    path('reservations/<int:pk>/', views.ReservationDetailView.as_view(), name='reservation-detail'),
+    path('reservations/<int:pk>/upload-receipt/', views.UploadReceiptView.as_view(), name='upload-receipt'),
+    path('reservations/all/', views.AllReservationsView.as_view()),
+    path("reservations/<int:pk>/", views.ReservationDetailView.as_view(), name="reservation-detail"),
     path('users/<int:id>/reactivate/', views.ReactivateUserView.as_view(), name='reactivate-user'),
+    path('locations/<int:pk>/', views.ParkingLocationDetailView.as_view(), name='location-detail'),
     
-    
+
     
 ]
 
