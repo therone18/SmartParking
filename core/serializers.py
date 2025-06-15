@@ -40,19 +40,20 @@ class UserSerializer(serializers.ModelSerializer):
 # Parking-related serializers
 # ------------------------------
 
+class ParkingSlotSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParkingSlot
+        fields = ['id', 'slot_id', 'is_available', 'locked']
+
 class ParkingLocationSerializer(serializers.ModelSerializer):
     """
     Basic serializer for parking locations.
     """
-    slot_ids = serializers.ReadOnlyField()
+    slots = ParkingSlotSummarySerializer(source='parkingslot_set', many=True)
 
     class Meta:
         model = ParkingLocation
-        fields = [
-            'id', 'name', 'address',
-            'google_maps_url', 'latitude', 'longitude',
-            'slot_ids'
-        ]
+        fields = ['id', 'name', 'address', 'google_maps_url', 'latitude', 'longitude', 'slots']
 
 
 class SimpleLocationSerializer(serializers.ModelSerializer):
@@ -71,7 +72,8 @@ class ParkingSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParkingSlot
         fields = ['id', 'location', 'slot_id', 'floorzone_number', 'is_available', 'locked']
-        read_only_fields = ['slot_id']
+        read_only_fields = ['id']
+
 
 
 class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):

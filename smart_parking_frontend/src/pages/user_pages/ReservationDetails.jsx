@@ -5,10 +5,9 @@ import axiosInstance from "../../services/axios";
 const ReservationDetails = () => {
   const { id } = useParams(); // Get reservation ID from URL
   const navigate = useNavigate();
-
   const [reservation, setReservation] = useState(null);
 
-  // Fetch reservation details on mount
+  // Fetch reservation details
   useEffect(() => {
     const fetchReservation = async () => {
       try {
@@ -19,7 +18,6 @@ const ReservationDetails = () => {
         alert("Failed to load reservation.");
       }
     };
-
     fetchReservation();
   }, [id]);
 
@@ -32,14 +30,14 @@ const ReservationDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10 px-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
-        <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">
+    <div className="min-h-screen bg-slate-50 py-10 px-4 flex justify-center items-start">
+      <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl w-full">
+        <h2 className="text-2xl font-bold text-indigo-800 mb-6 text-center">
           Reservation Details
         </h2>
 
-        <div className="space-y-4 text-sm sm:text-base">
-          {/* Basic Info */}
+        {/* Basic Reservation Info */}
+        <div className="space-y-3 text-sm sm:text-base">
           <DetailRow label="Location" value={reservation.location?.name} />
           <DetailRow label="Address" value={reservation.location?.address} />
           <DetailRow label="Slot ID" value={reservation.slot} />
@@ -51,36 +49,55 @@ const ReservationDetails = () => {
             label="End Time"
             value={new Date(reservation.end_time).toLocaleString()}
           />
-          <DetailRow label="Status" value={reservation.status} />
+          <DetailRow
+            label="Status"
+            value={
+              <span
+                className={`font-semibold ${
+                  reservation.status === "Reserved"
+                    ? "text-blue-500"
+                    : reservation.status === "Complete"
+                    ? "text-green-500"
+                    : reservation.status === "Cancelled"
+                    ? "text-red-500"
+                    : "text-slate-800"
+                }`}
+              >
+                {reservation.status}
+              </span>
+            }
+          />
+        </div>
 
-          {/* Vehicle Info */}
-          <hr />
-          <h3 className="text-lg font-semibold text-gray-800">Vehicle Info</h3>
+        {/* Vehicle Info */}
+        <hr className="my-5" />
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">Vehicle Info</h3>
+        <div className="space-y-2 text-sm sm:text-base">
           <DetailRow label="Make" value={reservation.vehicle_make} />
           <DetailRow label="Model" value={reservation.vehicle_model} />
           <DetailRow label="Plate Number" value={reservation.plate_number} />
           <DetailRow label="Type" value={reservation.vehicle_type} />
-
-          {/* Receipt */}
-          {reservation.receipt && (
-            <>
-              <hr />
-              <div>
-                <strong>Receipt:</strong>
-                <img
-                  src={reservation.receipt}
-                  alt="Uploaded Receipt"
-                  className="mt-2 max-w-xs border rounded shadow-sm"
-                />
-              </div>
-            </>
-          )}
         </div>
+
+        {/* Receipt Image */}
+        {reservation.receipt && (
+          <>
+            <hr className="my-5" />
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">Receipt</h3>
+            <div className="flex justify-center">
+              <img
+                src={reservation.receipt}
+                alt="Payment Receipt"
+                className="max-w-xs w-full rounded border shadow"
+              />
+            </div>
+          </>
+        )}
 
         {/* Back Button */}
         <button
           onClick={() => navigate("/dashboard")}
-          className="mt-6 w-full bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 transition"
+          className="mt-6 w-full bg-gray-200 hover:bg-gray-300 text-slate-900 py-2 rounded transition"
         >
           Back to Dashboard
         </button>
@@ -89,11 +106,11 @@ const ReservationDetails = () => {
   );
 };
 
-// 🔁 Reusable row for displaying label/value pairs
+// 🔁 Row component to display a label and value
 const DetailRow = ({ label, value }) => (
-  <div className="flex justify-between border-b pb-1">
-    <span className="font-medium text-gray-600">{label}:</span>
-    <span className="text-gray-800">{value || "-"}</span>
+  <div className="flex justify-between gap-4 border-b pb-1">
+    <span className="text-slate-600 font-medium">{label}:</span>
+    <span className="text-slate-900 text-right">{value || "-"}</span>
   </div>
 );
 

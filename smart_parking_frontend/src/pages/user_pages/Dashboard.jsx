@@ -1,109 +1,179 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../services/axios";
+import QuickActions from "../../components/QuickActions";
 
 const Dashboard = () => {
   const [reservations, setReservations] = useState([]);
   const [profile, setProfile] = useState({});
+  const [recent, setRecent] = useState([]);
+  const [locations, setLocations] = useState([]);
 
-  // Fetch user profile and reservation data on mount
   useEffect(() => {
     const getData = async () => {
       try {
-        const [res1, res2] = await Promise.all([
+        const [res1, res2, res3] = await Promise.all([
           axiosInstance.get("/api/reservations/me/"),
           axiosInstance.get("/api/profile/"),
+          axiosInstance.get("/api/locations/"),
         ]);
-        setReservations(res1.data);
-        setProfile(res2.data);
-      } catch (error) {
-        console.error(
-          "Failed to get reservation data:",
-          error.response?.data || error.message
+
+        const all = res1.data;
+        setReservations(all.filter((r) => r.status === "Active"));
+        setRecent(
+          all
+            .filter(
+              (r) => r.status === "Complete" || r.status === "Checked-out"
+            )
+            .sort(
+              (a, b) =>
+                new Date(b.last_park_out || b.end_time) -
+                new Date(a.last_park_out || a.end_time)
+            )
+            .slice(0, 3)
         );
+
+        setProfile(res2.data);
+        setLocations(res3.data);
+      } catch (error) {
+        console.error("Failed to load dashboard data:", error);
       }
     };
 
     getData();
   }, []);
 
-  // Handle user logout
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/";
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 py-10 px-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+        <h1 className="text-3xl font-bold text-slate-900 mb-6">
           Welcome back, {profile.first_name || "User"}!
         </h1>
 
-        {/* Reservation List */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-2">Active Reservations</h2>
-            <ul className="space-y-2">
-              {reservations.length === 0 ? (
-                <li className="text-gray-500">No reservations yet.</li>
-              ) : (
-                reservations.map((res) => (
-                  <li
-                    key={res.id}
-                    className="border rounded p-3 flex justify-between items-center"
-                  >
-                    <div>
-                      <div className="font-medium">
-                        {res.location?.name || "Unknown Location"}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {new Date(res.start_time).toLocaleString()} →{" "}
-                        {new Date(res.end_time).toLocaleString()}
-                      </div>
+        {/* Active Reservations */}
+        <div className="bg-white p-6 rounded-lg shadow mb-8">
+          <h2 className="text-xl font-semibold text-slate-900 mb-3">
+            Active Reservations
+          </h2>
+          <ul className="space-y-3">
+            {reservations.length === 0 ? (
+              <li className="text-gray-500">No active reservations.</li>
+            ) : (
+              reservations.map((res) => (
+                <li
+                  key={res.id}
+                  className="flex justify-between items-center border rounded p-3"
+                >
+                  <div>
+                    <div className="font-medium text-slate-900">
+                      {res.location?.name}
                     </div>
-                    <span className="px-2 py-1 text-sm rounded-full bg-green-200 text-green-800">
-                      {res.status}
-                    </span>
-                  </li>
-                ))
-              )}
-            </ul>
+                    <div className="text-sm text-gray-500">
+                      {new Date(res.start_time).toLocaleString()} →{" "}
+                      {new Date(res.end_time).toLocaleString()}
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 text-sm rounded-full bg-green-100 text-green-600 font-medium">
+                    {res.status}
+                  </span>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+
+        {/* Recent Parking Activity */}
+        <div className="bg-white p-6 rounded-lg shadow mb-8">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-xl font-semibold text-slate-900">
+              Recent Parking Activity
+            </h2>
+            {/* 🔗 View Full History Button */}
+            <button
+              onClick={() => (window.location.href = "/reservations/history")}
+              className="text-sm text-blue-500 hover:underline"
+            >
+              View All History →
+            </button>
           </div>
 
-          {/* Quick Actions */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-            <div className="space-y-3">
-              <button className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded shadow">
-                Make a Reservation
-              </button>
-              <button
-                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded shadow"
-                onClick={() => (window.location.href = "/myreservations")}
+          <ul className="space-y-3">
+            {recent.length === 0 ? (
+              <li className="text-gray-500">No recent parking history.</li>
+            ) : (
+              recent.map((res) => (
+                <li key={res.id} className="border rounded p-3">
+                  <div className="text-slate-900 font-medium">
+                    {res.location?.name}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {new Date(
+                      res.last_park_in || res.start_time
+                    ).toLocaleString()}{" "}
+                    →{" "}
+                    {new Date(
+                      res.last_park_out || res.end_time
+                    ).toLocaleString()}
+                  </div>
+                  <div className="text-sm mt-1 text-slate-600">
+                    Status:{" "}
+                    <span
+                      className={
+                        res.status === "Complete"
+                          ? "text-green-500"
+                          : "text-amber-500"
+                      }
+                    >
+                      {res.status}
+                    </span>
+                  </div>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+
+        {/* ✅ Available Locations */}
+        <div className="bg-white shadow rounded-lg p-6 ">
+          <h2 className="text-xl font-semibold text-slate-900 mb-3">
+            Available Locations
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {locations.map((loc) => (
+              <div
+                key={loc.id}
+                className="border rounded p-4 bg-slate-50 hover:bg-slate-100 transition"
               >
-                View My Reservations
-              </button>
-              <button
-                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded shadow"
-                onClick={() => (window.location.href = "/profile")}
-              >
-                Go to My Profile
-              </button>
-              <button
-                onClick={handleLogout}
-                className="w-full bg-red-100 hover:bg-red-200 text-red-600 py-2 rounded shadow"
-              >
-                Logout
-              </button>
-            </div>
+                <h3 className="text-lg font-bold text-indigo-800">
+                  {loc.name}
+                </h3>
+                <p className="text-sm text-gray-700 mb-2">{loc.address}</p>
+                {loc.google_maps_url && (
+                  <a
+                    href={loc.google_maps_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline text-sm"
+                  >
+                    View on Google Maps
+                  </a>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="text-sm text-gray-500 text-center mt-8">
+        <footer className="text-sm text-gray-500 text-center mt-12">
           &copy; 2025 Smart Parking App | TJBA
         </footer>
       </div>
+
+      {/* Floating quick actions */}
+      <QuickActions onLogout={handleLogout} />
     </div>
   );
 };

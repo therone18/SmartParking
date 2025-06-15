@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../../services/axios';
 
 const Register = () => {
   const navigate = useNavigate();
 
-  // Form field states
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -15,17 +14,14 @@ const Register = () => {
     confirmPassword: '',
   });
 
-  // Handle field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic password confirmation validation
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match.");
       return;
@@ -49,78 +45,42 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+    <div className="flex items-center justify-center min-h-screen bg-slate-50">
+      <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+        <h2 className="text-3xl font-bold mb-6 text-center text-slate-900">
+          Create Your Account
+        </h2>
         <form onSubmit={handleSubmit}>
-
-          {/* First Name */}
-          <FormInput
-            label="First Name"
-            name="firstName"
-            value={form.firstName}
-            onChange={handleChange}
-          />
-
-          {/* Last Name */}
-          <FormInput
-            label="Last Name"
-            name="lastName"
-            value={form.lastName}
-            onChange={handleChange}
-          />
-
-          {/* Username */}
-          <FormInput
-            label="Username"
-            name="username"
-            value={form.username}
-            onChange={handleChange}
-          />
-
-          {/* Email */}
-          <FormInput
-            label="Email"
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-          />
-
-          {/* Password */}
-          <FormInput
-            label="Password"
-            name="password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-          />
-
-          {/* Confirm Password */}
-          <FormInput
-            label="Confirm Password"
-            name="confirmPassword"
-            type="password"
-            value={form.confirmPassword}
-            onChange={handleChange}
-          />
+          <FormInput label="First Name" name="firstName" value={form.firstName} onChange={handleChange} />
+          <FormInput label="Last Name" name="lastName" value={form.lastName} onChange={handleChange} />
+          <FormInput label="Username" name="username" value={form.username} onChange={handleChange} />
+          <FormInput label="Email" name="email" type="email" value={form.email} onChange={handleChange} />
+          <FormInput label="Password" name="password" type="password" value={form.password} onChange={handleChange} />
+          <FormInput label="Confirm Password" name="confirmPassword" type="password" value={form.confirmPassword} onChange={handleChange} />
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-indigo-800 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-900 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Register
           </button>
         </form>
+
+        <div className="mt-6 text-center text-sm text-slate-900">
+          Already have an account?{' '}
+          <Link to="/" className="text-blue-500 font-medium hover:underline">
+            Login here
+          </Link>
+        </div>
       </div>
     </div>
   );
 };
 
-// 🔁 Reusable form input component
+// 🔁 Reusable form input field
 const FormInput = ({ label, name, value, onChange, type = "text" }) => (
   <div className="mb-4">
-    <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+    <label htmlFor={name} className="block text-sm font-medium text-slate-900 mb-1">
       {label}
     </label>
     <input
@@ -130,7 +90,7 @@ const FormInput = ({ label, name, value, onChange, type = "text" }) => (
       value={value}
       onChange={onChange}
       required
-      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"
     />
   </div>
 );

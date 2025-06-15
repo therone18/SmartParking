@@ -20,7 +20,7 @@ urlpatterns = [
     path('locations/', views.ParkingLocationListCreateView.as_view(), name='location-list-create'),
     path('locations/search/', views.ParkingLocationSearchView.as_view(), name='location-search'),
     path('locations/<int:pk>/', views.ParkingLocationDetailView.as_view(), name='location-detail'),
-    path('locations/<int:id>/users/', views.UsersByLocationView.as_view(), name='location-users'),
+    #path('locations/<int:id>/users/', views.UsersByLocationView.as_view(), name='location-users'),
     path('locations/<int:pk>/reservations/', views.LocationReservationsView.as_view(), name='location-reservations'),
     path('locations-dashboard/', views.AdminLocationDashboardView.as_view(), name='admin-location-dashboard'),
 
@@ -61,5 +61,5 @@ urlpatterns = [
     # -------------------------------
     # System
     # -------------------------------
-    path('system/healthcheck/', views.HealthCheckView.as_view(), name='health-check'),
+    #path('system/healthcheck/', views.HealthCheckView.as_view(), name='health-check'),
 ]

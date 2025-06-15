@@ -12,6 +12,10 @@
     "dev:admin": "cross-env VITE_ROLE=admin VITE_PORT=3001 vite"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.1.1",
+    "@mui/material": "^7.1.1",
     "@tailwindcss/vite": "^4.1.10",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.5",

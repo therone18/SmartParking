@@ -6,8 +6,7 @@ const MakeReservation = () => {
   const navigate = useNavigate();
 
   const [locations, setLocations] = useState([]);
-  const [slots, setSlots] = useState([]);
-
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [formData, setFormData] = useState({
     location: "",
     slot: "",
@@ -19,7 +18,7 @@ const MakeReservation = () => {
     vehicle_type: "",
   });
 
-  // Fetch all available locations on mount
+  // Fetch locations on mount
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -32,162 +31,172 @@ const MakeReservation = () => {
     fetchLocations();
   }, []);
 
-  // Fetch slot IDs when a location is selected
+  // Fetch slot details when a location is selected
   useEffect(() => {
-    const fetchSlots = async () => {
+    const fetchSlotDetails = async () => {
       if (formData.location) {
         try {
           const res = await axiosInstance.get(`/api/locations/${formData.location}/`);
-          setSlots(res.data.slot_ids || []);
+          setSelectedLocation(res.data);
         } catch (error) {
-          console.error("Error fetching slots:", error);
+          console.error("Error fetching location details:", error);
         }
+      } else {
+        setSelectedLocation(null);
       }
     };
-    fetchSlots();
+    fetchSlotDetails();
   }, [formData.location]);
 
-  // Update form field on input
+  // Update any form field
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle reservation form submission
+  // Slot selection
+  const handleSlotSelect = (slotId) => {
+    setFormData((prev) => ({ ...prev, slot: slotId }));
+  };
+
+  // Submit reservation
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/api/reservations/", {
-        ...formData,
-        slot: formData.slot, // ensure slot is passed explicitly
-      });
-
-      // Navigate to payment page with reservation ID
-      const reservationId = response.data.id;
-      navigate(`/payment/${reservationId}`);
+      const res = await axiosInstance.post("/api/reservations/", formData);
+      navigate(`/payment/${res.data.id}`);
     } catch (error) {
       console.error("Reservation failed:", error.response?.data || error.message);
-      alert("Failed to make reservation. Please try again.");
+      alert("Reservation failed. Please try again.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-10 px-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl">
-        <h2 className="text-2xl font-bold mb-6 text-center">Make a Reservation</h2>
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center py-12 px-4">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl">
+        <h2 className="text-2xl font-bold mb-6 text-center text-slate-900">Make a Reservation</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Location selection */}
           <div>
-            <label className="block mb-1 font-medium">Location</label>
+            <label className="block mb-1 text-sm font-medium text-slate-700">Select Location</label>
             <select
               name="location"
               value={formData.location}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-indigo-800"
             >
-              <option value="">Select location</option>
+              <option value="">-- Choose a Location --</option>
               {locations.map((loc) => (
                 <option key={loc.id} value={loc.id}>
-                  {loc.name} – {loc.address}
+                  {loc.name} — {loc.address}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Slot selection (basic input for now) */}
-          <div>
-            <label className="block mb-1 font-medium">Slot</label>
-            <input
-              type="text"
-              name="slot"
-              placeholder="Enter Slot ID"
-              value={formData.slot}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border rounded"
-            />
-          </div>
+          {/* Slot selection visual */}
+          {selectedLocation?.slots?.length > 0 && (
+            <div>
+              <label className="block mb-2 font-medium text-slate-700">Available Slots</label>
+              <div className="grid grid-cols-4 gap-3 p-2 border border-gray-200 rounded bg-slate-100">
+                {selectedLocation.slots.map((slot) => (
+                  <button
+                    type="button"
+                    key={slot.id}
+                    onClick={() => handleSlotSelect(slot.id)}
+                    className={`text-sm py-2 rounded border shadow-sm ${
+                      formData.slot === slot.id
+                        ? "bg-indigo-800 text-white border-indigo-800"
+                        : slot.locked || !slot.is_available
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-white text-slate-900 hover:bg-indigo-100"
+                    }`}
+                    disabled={slot.locked || !slot.is_available}
+                  >
+                    {`Slot-${slot.slot_id.slice(0, 6).toUpperCase()}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-          {/* Time selection */}
-          <div>
-            <label className="block mb-1 font-medium">Start Time</label>
-            <input
-              type="datetime-local"
-              name="start_time"
-              value={formData.start_time}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border rounded"
-            />
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">End Time</label>
-            <input
-              type="datetime-local"
-              name="end_time"
-              value={formData.end_time}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border rounded"
-            />
+          {/* Time inputs */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-slate-700">Start Time</label>
+              <input
+                type="datetime-local"
+                name="start_time"
+                value={formData.start_time}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border rounded focus:ring-indigo-800"
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-slate-700">End Time</label>
+              <input
+                type="datetime-local"
+                name="end_time"
+                value={formData.end_time}
+                onChange={handleChange}
+                required
+                className="w-full p-2 border rounded focus:ring-indigo-800"
+              />
+            </div>
           </div>
 
           {/* Vehicle info */}
           <div className="grid grid-cols-2 gap-4">
             <input
-              type="text"
               name="vehicle_make"
               placeholder="Vehicle Make"
               value={formData.vehicle_make}
               onChange={handleChange}
-              className="p-2 border rounded"
               required
+              className="p-2 border rounded col-span-1 focus:ring-indigo-800"
             />
             <input
-              type="text"
               name="vehicle_model"
               placeholder="Vehicle Model"
               value={formData.vehicle_model}
               onChange={handleChange}
-              className="p-2 border rounded"
               required
+              className="p-2 border rounded col-span-1 focus:ring-indigo-800"
             />
             <input
-              type="text"
               name="plate_number"
               placeholder="Plate Number"
               value={formData.plate_number}
               onChange={handleChange}
-              className="p-2 border rounded col-span-2"
               required
+              className="p-2 border rounded col-span-2 focus:ring-indigo-800"
             />
             <input
-              type="text"
               name="vehicle_type"
               placeholder="Vehicle Type"
               value={formData.vehicle_type}
               onChange={handleChange}
-              className="p-2 border rounded col-span-2"
               required
+              className="p-2 border rounded col-span-2 focus:ring-indigo-800"
             />
           </div>
 
-          {/* Buttons */}
+          {/* Submit & Cancel buttons */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            className="w-full bg-indigo-800 hover:bg-indigo-900 text-white py-2 rounded shadow transition"
           >
-            Reserve
+            Reserve Slot
           </button>
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
-            className="w-full mt-2 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300"
+            className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded transition"
           >
-            Go Back to Dashboard
+            Cancel
           </button>
         </form>
       </div>
