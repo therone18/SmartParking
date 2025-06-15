@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 import uuid
 
 class ParkingLocation(models.Model):
+    """
+    A physical location that contains multiple parking slots.
+    """
     name = models.CharField(max_length=100)
     address = models.TextField()
     slots = models.PositiveSmallIntegerField()
@@ -18,22 +21,25 @@ class ParkingLocation(models.Model):
         return list(self.parkingslot_set.values_list('slot_id', flat=True))
 
 
-
 class ParkingSlot(models.Model):
+    """
+    Represents an individual parking slot within a location.
+    """
     location = models.ForeignKey(ParkingLocation, on_delete=models.CASCADE)
-    slot_id = models.UUIDField(default=uuid.uuid4, editable=False, null=True, blank=True, unique=True)
-    floorzone_number = models.CharField(max_length=10, null=True, blank=True)
+    slot_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    floorzone_number = models.CharField(max_length=10, blank=True, null=True)
     is_available = models.BooleanField(default=True)
     locked = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return f"{self.location.name} - {self.slot_id}"
 
 
-
 class Reservation(models.Model):
+    """
+    Stores user reservations for specific parking slots.
+    """
     STATUS_CHOICES = [
-        
         ('Pending', 'Pending'),
         ('Processing', 'Processing'),
         ('Reserved', 'Reserved'),
@@ -43,18 +49,21 @@ class Reservation(models.Model):
         ('Cancelled', 'Cancelled'),
         ('Complete', 'Complete'),
     ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     slot = models.ForeignKey(ParkingSlot, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    last_park_in = models.DateTimeField(null=True, blank=True)
-    last_park_out = models.DateTimeField(null=True, blank=True)
+    last_park_in = models.DateTimeField(blank=True, null=True)
+    last_park_out = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
-    receipt = models.ImageField(upload_to='receipts/', null=True, blank=True)
+    receipt = models.ImageField(upload_to='receipts/', blank=True, null=True)
 
-    # Car info (now required)
+    # Required vehicle information
     vehicle_make = models.CharField(max_length=50)
     vehicle_model = models.CharField(max_length=50)
     plate_number = models.CharField(max_length=20, unique=True)
     vehicle_type = models.CharField(max_length=20)
 
+    def __str__(self):
+        return f"Reservation #{self.id} ({self.status})"
