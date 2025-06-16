@@ -36,7 +36,7 @@ const Profile = () => {
   // Submit profile changes
   const handleSave = async () => {
     try {
-      await axiosInstance.put("/api/profile/", formData);
+      await axiosInstance.put("/api/profile/update", formData);
       setIsEditing(false);
       fetchProfile(); // Refresh display
       alert("Profile Saved!");
