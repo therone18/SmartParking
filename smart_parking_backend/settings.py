@@ -146,7 +146,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['smartparking-backend.onrender.com']  # Update this once deployed
+ALLOWED_HOSTS = ['smartparking-c9yn.onrender.com']  # Update this once deployed
 
 CORS_ALLOW_ALL_ORIGINS = True
 
