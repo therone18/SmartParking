@@ -80,7 +80,7 @@ class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):
     """
     Serializer that includes associated parking slots.
     """
-    slots = ParkingSlotSerializer(many=True, source='parkingslot_set')
+    slots = ParkingSlotSerializer(many=True, source='parkingslot_set', read_only=True)
 
     class Meta:
         model = ParkingLocation

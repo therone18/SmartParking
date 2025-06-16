@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/axios";
+import { Navigate } from "react-router-dom";
 
 const Profile = () => {
+    const navigate = Navigate();
   const [profile, setProfile] = useState(null); // Holds fetched user data
   const [isEditing, setIsEditing] = useState(false); // Toggle form edit mode
   const [formData, setFormData] = useState({}); // Editable form values
@@ -14,7 +16,7 @@ const Profile = () => {
   // Load current user profile data
   const fetchProfile = async () => {
     try {
-      const res = await axiosInstance.get("/api/profile/");
+      const res = await axiosInstance.get("/api/profile/update");
       setProfile(res.data);
       setFormData(res.data); // Pre-fill form fields
     } catch (error) {
@@ -87,7 +89,7 @@ const Profile = () => {
                 Edit
               </button>
               <button
-                onClick={() => (window.location.href = "/dashboard")}
+                onClick={() => navigate("/dashboard")}
                 className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
               >
                 Go Back to Dashboard
