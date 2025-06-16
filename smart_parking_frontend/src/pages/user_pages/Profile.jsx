@@ -36,6 +36,7 @@ const Profile = () => {
   // Submit profile changes
   const handleSave = async () => {
     try {
+        console.log("updating profile...")
       await axiosInstance.put("/api/profile/update", formData);
       setIsEditing(false);
       fetchProfile(); // Refresh display
