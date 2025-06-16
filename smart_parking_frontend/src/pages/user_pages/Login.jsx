@@ -50,7 +50,7 @@ const Login = () => {
     <div className="flex items-center justify-center min-h-screen bg-slate-50">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold mb-6 text-center text-indigo-800">
-          Be Smart, Start Parking.
+          Be Smart, Start Paring.
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Username Field */}
