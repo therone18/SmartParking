@@ -3,7 +3,8 @@ import axios from 'axios';
 const baseURL = 'http://127.0.0.1:8000'; // or your actual backend URL
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: "https://smartparking-backend.onrender.com",
+  withCredentials: true,
 });
 
 // Request: Attach token
