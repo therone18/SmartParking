@@ -148,6 +148,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['smartparking-backend.onrender.com']  # Update this once deployed
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+
 CORS_ALLOWED_ORIGINS = [
     'https://smart-parking-peach.vercel.app',  
     'http://localhost:3000',
