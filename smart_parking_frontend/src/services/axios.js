@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://127.0.0.1:8000'; // or your actual backend URL
+const baseURL = 'https://smartparking-c9yn.onrender.com'; 
 
 const axiosInstance = axios.create({
   baseURL: "https://smartparking-c9yn.onrender.com",
