@@ -30,7 +30,7 @@ class ParkingLocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ParkingLocation
-        fields = ['id', 'name', 'address', 'google_maps_url', 'latitude', 'longitude', 'slot_ids']
+        fields = ['id', 'name', 'address', 'google_maps_url', 'latitude', 'longitude', 'slot_ids', 'slots']
 
         
 class ParkingSlotSerializer(serializers.ModelSerializer):
