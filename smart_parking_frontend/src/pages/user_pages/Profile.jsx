@@ -16,7 +16,7 @@ const Profile = () => {
   // Load current user profile data
   const fetchProfile = async () => {
     try {
-      const res = await axiosInstance.get("/api/profile/update");
+      const res = await axiosInstance.get("/api/profile/");
       setProfile(res.data);
       setFormData(res.data); // Pre-fill form fields
     } catch (error) {
