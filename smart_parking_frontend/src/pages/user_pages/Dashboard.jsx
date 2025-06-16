@@ -137,7 +137,7 @@ const Dashboard = () => {
           </ul>
         </div>
 
-        {/* ✅ Available Locations */}
+        {/* Available Locations */}
         <div className="bg-white shadow rounded-lg p-6 ">
           <h2 className="text-xl font-semibold text-slate-900 mb-3">
             Available Locations

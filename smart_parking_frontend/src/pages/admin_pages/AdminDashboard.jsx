@@ -8,20 +8,23 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Fetch profile and data summaries
-    axiosInstance.get("/api/profile/")
+    axiosInstance
+      .get("/api/profile/")
       .then((res) => setAdminUsername(res.data.username || "Admin"))
       .catch((err) => console.error("Profile error:", err));
 
-    axiosInstance.get("/api/summary/slot-utilization/overall/")
+    axiosInstance
+      .get("/api/summary/slot-utilization/overall/")
       .then((res) => setSummary(res.data))
       .catch((err) => console.error("Summary error:", err));
 
-    console.log(summary)
+    console.log(summary);
 
-    axiosInstance.get("/api/reservations/all/")
+    axiosInstance
+      .get("/api/reservations/all/")
       .then((res) => {
         const sorted = res.data
-          .filter(r => r.created_at)
+          .filter((r) => r.created_at)
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
           .slice(0, 5);
         setRecentReservations(sorted);
@@ -37,16 +40,33 @@ const AdminDashboard = () => {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <SummaryCard title="Total Locations" value={summary.total_locations || 0} color="blue" />
-        <SummaryCard title="Total Slots" value={summary.total_slots || 0} color="green" />
-        <SummaryCard title="Utilization Rate" value={`${(summary.utilization_rate || 0) * 100}%`} color="yellow" />
+        <SummaryCard
+          title="Total Locations"
+          value={summary.total_locations || 0}
+          color="blue"
+        />
+        <SummaryCard
+          title="Total Slots"
+          value={summary.total_slots || 0}
+          color="green"
+        />
+        <SummaryCard
+          title="Utilization Rate"
+          value={`${(summary.utilization_rate || 0) * 100}%`}
+          color="yellow"
+        />
       </div>
 
       {/* Recent Reservations */}
       <div className="bg-white rounded shadow p-6 mb-10">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-slate-900">Recent Reservations</h2>
-          <a href="/dashboard/admin/reservations" className="text-blue-500 hover:underline text-sm">
+          <h2 className="text-xl font-semibold text-slate-900">
+            Recent Reservations
+          </h2>
+          <a
+            href="/dashboard/admin/reservations"
+            className="text-blue-500 hover:underline text-sm"
+          >
             View All
           </a>
         </div>
@@ -56,10 +76,24 @@ const AdminDashboard = () => {
           <ul className="space-y-3">
             {recentReservations.map((res) => (
               <li key={res.id} className="border rounded p-4 bg-slate-50">
-                <p><strong>User:</strong> {res.user_full_name || res.user || "Unknown"}</p>
-                <p><strong>Location:</strong> {res.location?.name || res.location_name || "N/A"}</p>
-                <p><strong>Status:</strong> <span className="text-indigo-700 font-semibold">{res.status}</span></p>
-                <p><strong>Created:</strong> {new Date(res.created_at).toLocaleString()}</p>
+                <p>
+                  <strong>User:</strong>{" "}
+                  {res.user_full_name || res.user || "Unknown"}
+                </p>
+                <p>
+                  <strong>Location:</strong>{" "}
+                  {res.location?.name || res.location_name || "N/A"}
+                </p>
+                <p>
+                  <strong>Status:</strong>{" "}
+                  <span className="text-indigo-700 font-semibold">
+                    {res.status}
+                  </span>
+                </p>
+                <p>
+                  <strong>Created:</strong>{" "}
+                  {new Date(res.created_at).toLocaleString()}
+                </p>
               </li>
             ))}
           </ul>
@@ -71,12 +105,13 @@ const AdminDashboard = () => {
         <AdminNavLink to="/locations/management" label="Manage Locations" />
         <AdminNavLink to="/dashboard/admin/slots" label="Manage Slots" />
         <AdminNavLink to="/user/management" label="Manage Users" />
+        <LogoutButton />
       </div>
     </div>
   );
 };
 
-// 🔁 Reusable summary card
+
 const SummaryCard = ({ title, value, color }) => {
   const bgColor = {
     blue: "bg-blue-100 text-blue-700",
@@ -92,7 +127,7 @@ const SummaryCard = ({ title, value, color }) => {
   );
 };
 
-// 🔁 Reusable nav link card
+
 const AdminNavLink = ({ to, label }) => (
   <a
     href={to}
@@ -100,6 +135,18 @@ const AdminNavLink = ({ to, label }) => (
   >
     <span className="font-medium text-slate-900">{label}</span>
   </a>
+);
+
+const LogoutButton = () => (
+  <button
+    onClick={() => {
+      localStorage.clear();
+      window.location.href = "/";
+    }}
+    className="bg-white border rounded shadow p-4 text-center hover:bg-gray-50 transition text-red-600 font-medium"
+  >
+    Logout
+  </button>
 );
 
 export default AdminDashboard;
