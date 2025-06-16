@@ -78,12 +78,8 @@ class AdminLocationDashboardView(APIView):
         return Response(serializer.data)
 
 
-class TestCORS(APIView):
-    permission_classes = [permissions.AllowAny]  # ✅ Not "Allowany" (capitalization matters)
-
-    def options(self, request, *args, **kwargs):
-        # ✅ Handles the preflight OPTIONS request explicitly
-        return Response(status=200)
+class TestCORSView(APIView):
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
         return Response({"message": "CORS is working!"})
