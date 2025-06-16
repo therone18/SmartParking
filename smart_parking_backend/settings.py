@@ -146,7 +146,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['smartparking-c9yn.onrender.com']  # Update this once deployed
+ALLOWED_HOSTS = ['smartparking-c9yn.onrender.com'] 
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -177,6 +177,20 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
 
 
 STATIC_URL = '/static/'
