@@ -50,6 +50,7 @@ class OverallSlotUtilizationView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
+        locations = ParkingLocation.objects.all()
         total_slots = ParkingSlot.objects.count()
         active_reservations = Reservation.objects.filter(
             status__in=["Reserved", "Active"]
@@ -60,11 +61,11 @@ class OverallSlotUtilizationView(APIView):
         )
 
         return Response({
+            "total_locations": locations.count(),
             "total_slots": total_slots,
             "active_reservations": active_reservations,
             "utilization_rate": round(utilization_rate, 2)
         })
-
 
 class DailySummaryView(APIView):
     """

@@ -7,17 +7,17 @@ const AdminDashboard = () => {
   const [adminUsername, setAdminUsername] = useState("");
 
   useEffect(() => {
-    // Fetch admin profile
+    // Fetch profile and data summaries
     axiosInstance.get("/api/profile/")
-      .then((res) => setAdminUsername(res.data.username))
-      .catch((err) => console.error("Error fetching admin profile:", err));
+      .then((res) => setAdminUsername(res.data.username || "Admin"))
+      .catch((err) => console.error("Profile error:", err));
 
-    // Fetch slot utilization summary
     axiosInstance.get("/api/summary/slot-utilization/overall/")
       .then((res) => setSummary(res.data))
-      .catch((err) => console.error("Error fetching summary:", err));
+      .catch((err) => console.error("Summary error:", err));
 
-    // Fetch and sort recent reservations (limit to 5)
+    console.log(summary)
+
     axiosInstance.get("/api/reservations/all/")
       .then((res) => {
         const sorted = res.data
@@ -26,61 +26,79 @@ const AdminDashboard = () => {
           .slice(0, 5);
         setRecentReservations(sorted);
       })
-      .catch((err) => console.error("Error fetching reservations:", err));
+      .catch((err) => console.error("Reservations error:", err));
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-4">Welcome, {adminUsername}</h1>
+    <div className="min-h-screen bg-slate-50 p-6">
+      <h1 className="text-3xl font-bold text-indigo-800 mb-6">
+        Welcome, {adminUsername}
+      </h1>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <SummaryCard title="Total Locations" value={summary.total_locations || 0} color="blue" />
         <SummaryCard title="Total Slots" value={summary.total_slots || 0} color="green" />
-        <SummaryCard title="Utilization Rate" value={`${summary.utilization_rate || 0}%`} color="yellow" />
+        <SummaryCard title="Utilization Rate" value={`${(summary.utilization_rate || 0) * 100}%`} color="yellow" />
       </div>
 
       {/* Recent Reservations */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Recent Reservations</h2>
-        <ul className="space-y-2">
-          {recentReservations.map((res) => (
-            <li key={res.id} className="bg-white p-4 rounded shadow">
-              <p><strong>User:</strong> {res.user_full_name || res.user}</p>
-              <p><strong>Location:</strong> {res.location?.name || res.location_name}</p>
-              <p><strong>Status:</strong> {res.status}</p>
-              <p><strong>Created:</strong> {new Date(res.created_at).toLocaleString()}</p>
-            </li>
-          ))}
-        </ul>
+      <div className="bg-white rounded shadow p-6 mb-10">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-slate-900">Recent Reservations</h2>
+          <a href="/dashboard/admin/reservations" className="text-blue-500 hover:underline text-sm">
+            View All
+          </a>
+        </div>
+        {recentReservations.length === 0 ? (
+          <p className="text-gray-500">No recent reservations.</p>
+        ) : (
+          <ul className="space-y-3">
+            {recentReservations.map((res) => (
+              <li key={res.id} className="border rounded p-4 bg-slate-50">
+                <p><strong>User:</strong> {res.user_full_name || res.user || "Unknown"}</p>
+                <p><strong>Location:</strong> {res.location?.name || res.location_name || "N/A"}</p>
+                <p><strong>Status:</strong> <span className="text-indigo-700 font-semibold">{res.status}</span></p>
+                <p><strong>Created:</strong> {new Date(res.created_at).toLocaleString()}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      {/* Quick Admin Navigation */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <AdminNavLink to="/dashboard/admin/locations" label="Manage Locations" />
-        <AdminNavLink to="/dashboard/admin/slots" label="View Slots" />
-        <AdminNavLink to="/dashboard/admin/users" label="View Users" />
-        <AdminNavLink to="/dashboard/admin/feedback" label="View Feedback" />
+      {/* Navigation Panel */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <AdminNavLink to="/locations/management" label="Manage Locations" />
+        <AdminNavLink to="/dashboard/admin/slots" label="Manage Slots" />
+        <AdminNavLink to="/user/management" label="Manage Users" />
       </div>
     </div>
   );
 };
 
-// Reusable summary card component
-const SummaryCard = ({ title, value, color }) => (
-  <div className={`bg-${color}-100 p-4 rounded shadow`}>
-    <h2 className="text-xl font-semibold">{title}</h2>
-    <p className="text-2xl">{value}</p>
-  </div>
-);
+// 🔁 Reusable summary card
+const SummaryCard = ({ title, value, color }) => {
+  const bgColor = {
+    blue: "bg-blue-100 text-blue-700",
+    green: "bg-green-100 text-green-700",
+    yellow: "bg-yellow-100 text-yellow-700",
+  }[color];
 
-// Reusable admin nav link
+  return (
+    <div className={`p-4 rounded shadow ${bgColor}`}>
+      <h2 className="text-md font-medium">{title}</h2>
+      <p className="text-2xl font-bold">{value}</p>
+    </div>
+  );
+};
+
+// 🔁 Reusable nav link card
 const AdminNavLink = ({ to, label }) => (
   <a
     href={to}
-    className="bg-white text-center p-4 border rounded shadow hover:bg-gray-50"
+    className="bg-white border rounded shadow p-4 text-center hover:bg-gray-50 transition"
   >
-    {label}
+    <span className="font-medium text-slate-900">{label}</span>
   </a>
 );
 
