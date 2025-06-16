@@ -15,6 +15,7 @@ import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
 from pathlib import Path
+from corsheaders.defaults import default_headers
 
 load_dotenv()
 
@@ -56,6 +57,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware'
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -63,7 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
+    
 ]
 
 ROOT_URLCONF = 'smart_parking_backend.urls'
@@ -148,12 +150,29 @@ ALLOWED_HOSTS = ['smartparking-backend.onrender.com']  # Update this once deploy
 
 CORS_ALLOWED_ORIGINS = [
     'https://smart-parking-peach.vercel.app',  
+    'http://localhost:3000',
+    'http://localhost:3001',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://smart-parking-peach.vercel.app",
+]
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'access-control-allow-origin',
+    'access-control-allow-credentials',
+    'authorization',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]
 
 
