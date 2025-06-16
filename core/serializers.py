@@ -49,7 +49,7 @@ class ParkingLocationSerializer(serializers.ModelSerializer):
     """
     Basic serializer for parking locations.
     """
-    slots = ParkingSlotSummarySerializer(source='parkingslot_set', many=True)
+    slots = ParkingSlotSummarySerializer(source='parkingslot_set', many=True , read_only=True)
 
     class Meta:
         model = ParkingLocation
