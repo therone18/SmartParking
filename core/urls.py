@@ -1,14 +1,11 @@
 from django.urls import path
 from core import views
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 urlpatterns = [
 
     # -------------------------------
     # Auth & User Management
     # -------------------------------
-    path('profile/', views.ProfileView.as_view(), name='profile'),
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', views.RegisterView.as_view(), name='register'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('profile/update/', views.ProfileUpdateView.as_view(), name='profile-update'),
@@ -66,5 +63,5 @@ urlpatterns = [
     # -------------------------------
     #path('system/healthcheck/', views.HealthCheckView.as_view(), name='health-check'),
     
-    path("test-cors/", views.TestCORSView.as_view(), name="test-cors"),
+    path("api/test-cors/", views.TestCORSView.as_view(), name="test-cors"),
 ]
