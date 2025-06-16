@@ -63,5 +63,5 @@ urlpatterns = [
     # -------------------------------
     #path('system/healthcheck/', views.HealthCheckView.as_view(), name='health-check'),
     
-    path('api/test-cors/', views.test_cors),
+    path('api/test-cors/', views.TestCORS),
 ]
