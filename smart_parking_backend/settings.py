@@ -31,7 +31,6 @@ SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = "https://smartparking.vercel.app"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -69,7 +68,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'smart_parking_backend.urls'
 
-CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
@@ -151,6 +149,9 @@ ALLOWED_HOSTS = ['smartparking-backend.onrender.com']  # Update this once deploy
 CORS_ALLOWED_ORIGINS = [
     'https://smartparking.vercel.app',  # Your frontend Vercel domain
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
