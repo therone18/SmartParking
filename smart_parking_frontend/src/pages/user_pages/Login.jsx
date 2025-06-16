@@ -4,10 +4,26 @@ import axiosInstance from "../../services/axios";
 import { Link } from "react-router-dom";
 
 const Login = () => {
+
+  
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const testBackendConnection = async () => {
+      try {
+        const res = await axiosInstance.get("/api/test-cors/");  // Or "/api/ping/"
+        console.log("✅ Backend reachable:", res.data);
+      } catch (error) {
+        console.error("❌ CORS or backend error:", error);
+        alert("Backend is not responding or blocked by CORS.");
+      }
+    };
+
+    testBackendConnection();
+  }, []);
 
   // Handle login form submission
   const handleSubmit = async (e) => {

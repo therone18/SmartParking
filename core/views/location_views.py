@@ -76,3 +76,14 @@ class AdminLocationDashboardView(APIView):
         locations = ParkingLocation.objects.prefetch_related("parkingslot_set").all()
         serializer = ParkingLocationWithSlotsSerializer(locations, many=True)
         return Response(serializer.data)
+
+
+class TestCORS(APIView):
+    permission_classes = [permissions.AllowAny]  # ✅ Not "Allowany" (capitalization matters)
+
+    def options(self, request, *args, **kwargs):
+        # ✅ Handles the preflight OPTIONS request explicitly
+        return Response(status=200)
+
+    def get(self, request, *args, **kwargs):
+        return Response({"message": "CORS is working!"})

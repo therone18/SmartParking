@@ -72,3 +72,12 @@ class ApproveReservationView(APIView):
         reservation.save()
         serializer = ReservationSerializer(reservation)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+@api_view(['OPTIONS', 'GET'])
+@permission_classes([AllowAny])
+def test_cors(request):
+    return Response({"message": "CORS is working!"})
