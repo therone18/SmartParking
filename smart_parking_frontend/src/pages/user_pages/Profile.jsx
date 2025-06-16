@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/axios";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
-    const navigate = Navigate();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null); // Holds fetched user data
   const [isEditing, setIsEditing] = useState(false); // Toggle form edit mode
   const [formData, setFormData] = useState({}); // Editable form values
@@ -36,7 +36,7 @@ const Profile = () => {
   // Submit profile changes
   const handleSave = async () => {
     try {
-        console.log("updating profile...")
+      console.log("updating profile...");
       await axiosInstance.put("/api/profile/update", formData);
       setIsEditing(false);
       fetchProfile(); // Refresh display
@@ -47,7 +47,8 @@ const Profile = () => {
     }
   };
 
-  if (!profile) return <div className="p-6 text-center">Loading profile...</div>;
+  if (!profile)
+    return <div className="p-6 text-center">Loading profile...</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
@@ -124,7 +125,10 @@ const Profile = () => {
 // Reusable input field component
 const Field = ({ label, name, value, onChange, disabled }) => (
   <div>
-    <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+    <label
+      htmlFor={name}
+      className="block text-sm font-medium text-gray-700 mb-1"
+    >
       {label}
     </label>
     <input
