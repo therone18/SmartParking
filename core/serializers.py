@@ -36,8 +36,23 @@ class ParkingLocationSerializer(serializers.ModelSerializer):
 class ParkingSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParkingSlot
-        fields = ['id', 'location', 'slot_id', 'floorzone_number', 'is_available']
+        fields = ['id', 'location', 'slot_id', 'floorzone_number', 'is_available', 'locked']
         read_only_fields = ['id', 'slot_id']
+        
+class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):
+    slots = ParkingSlotSerializer(many=True, source='parkingslot_set', read_only=True)
+
+    class Meta:
+        model = ParkingLocation
+        fields = [
+            'id',
+            'name',
+            'address',
+            'slots',  
+            'google_maps_url',
+            'latitude',
+            'longitude'
+        ]
 
         
 class SlotUtilizationSerializer(serializers.Serializer):
@@ -77,19 +92,25 @@ class ParkingLocationUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 
 class ReservationSerializer(serializers.ModelSerializer):
     slot = serializers.PrimaryKeyRelatedField(queryset=ParkingSlot.objects.all(), required=True)
-    start_time = serializers.DateTimeField(required=True)
-    end_time = serializers.DateTimeField(required=True)
-    vehicle_make = serializers.CharField(required=True)
-    vehicle_model = serializers.CharField(required=True)
-    plate_number = serializers.CharField(required=True)
-    vehicle_type = serializers.CharField(required=True)
 
     class Meta:
         model = Reservation
         fields = [
-            'id', 'slot', 'start_time', 'end_time', 'vehicle_make',
-            'vehicle_model', 'plate_number', 'vehicle_type'
+            'id',
+            'slot',
+            'start_time',
+            'end_time',
+            'last_park_in',
+            'last_park_out',
+            'status',
+            'receipt',
+            'vehicle_make',
+            'vehicle_model',
+            'plate_number',
+            'vehicle_type',
+            'created_at'
         ]
+        read_only_fields = ['status', 'last_park_in', 'last_park_out', 'receipt', 'created_at']
 
     def validate(self, data):
         slot = data.get('slot')
@@ -98,20 +119,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         return data
 
 
-# Serializer for a location + all its slots
-class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):
-    slots = ParkingSlotSerializer(many=True, source='parkingslot_set', read_only=True)
 
-    class Meta:
-        model = ParkingLocation
-        fields = [
-            'id',
-            'name',
-            'address',
-            'slots',  # This will now be a list of detailed slot objects
-            'google_maps_url',
-            'latitude',
-            'longitude'
-        ]
+
 
 
