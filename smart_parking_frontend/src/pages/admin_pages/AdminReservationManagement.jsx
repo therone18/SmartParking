@@ -10,7 +10,7 @@ const AdminReservationManagement = () => {
   const fetchReservations = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get("/api/reservations/");
+      const res = await axiosInstance.get("/api/reservations/all/");
       setReservations(res.data);
     } catch (error) {
       console.error("Failed to fetch reservations:", error);
