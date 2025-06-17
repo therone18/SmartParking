@@ -25,11 +25,11 @@ class ParkingLocationListCreateView(generics.ListCreateAPIView):
 
 class ParkingLocationDetailView(generics.RetrieveAPIView):
     queryset = ParkingLocation.objects.all()
-    serializer_class = ParkingLocationSerializer  # Use new detailed version
-    permission_classes = [permissions.AllowAny]  # Publicly accessible if needed
+    serializer_class = ParkingLocationWithSlotsSerializer 
+    permission_classes = [permissions.AllowAny]
 
+    # Optional: your custom destroy logic (can be kept or moved to a different view)
     def destroy(self, request, *args, **kwargs):
-        # You can still keep this logic if needed (optional if not deleting here)
         location = self.get_object()
         slots = location.parkingslot_set.all()
 
@@ -47,8 +47,6 @@ class ParkingLocationDetailView(generics.RetrieveAPIView):
             )
 
         return super().destroy(request, *args, **kwargs)
-
-
 
 class ParkingLocationSearchView(APIView):
     def get(self, request):
