@@ -118,7 +118,39 @@ class ReservationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Selected slot is not available.")
         return data
 
+class ParkingLocationShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParkingLocation
+        fields = ['id', 'name', 'address', 'google_maps_url', 'latitude', 'longitude']
 
+class ReservationListSerializer(serializers.ModelSerializer):
+    slot_id = serializers.CharField(source='slot.slot_id', read_only=True)
+    location = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Reservation
+        fields = [
+            'id',
+            'slot',          # numeric ID
+            'slot_id',       # readable string
+            'start_time',
+            'end_time',
+            'last_park_in',
+            'last_park_out',
+            'status',
+            'receipt',
+            'vehicle_make',
+            'vehicle_model',
+            'plate_number',
+            'vehicle_type',
+            'created_at',
+            'location'       # populated from slot.location
+        ]
+
+    def get_location(self, obj):
+        if obj.slot and obj.slot.location:
+            return ParkingLocationShortSerializer(obj.slot.location).data
+        return None
 
 
 

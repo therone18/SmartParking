@@ -5,7 +5,7 @@ from django.utils.timezone import now
 from django.shortcuts import get_object_or_404
 
 from core.models import Reservation, ParkingSlot
-from core.serializers import ReservationSerializer
+from core.serializers import ReservationSerializer, ReservationListSerializer
 
 
 class ReservationCreateView(generics.CreateAPIView):
@@ -26,11 +26,12 @@ class MyReservationsView(generics.ListAPIView):
     """
     List all reservations belonging to the authenticated user.
     """
-    serializer_class = ReservationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        return Reservation.objects.filter(user=self.request.user)
+    def get(self, request):
+        reservations = Reservation.objects.filter(user=request.user).order_by('-created_at')
+        serializer = ReservationListSerializer(reservations, many=True)
+        return Response({"data": serializer.data})
 
 
 class AllReservationsView(generics.ListAPIView):
