@@ -113,7 +113,7 @@ backend/
 ---
 
 
-## 📽️ Demo Walkthrough
+##  Demo Walkthrough
 
 A demo video is available showcasing:
 - User flow (register → reserve → upload receipt)  
