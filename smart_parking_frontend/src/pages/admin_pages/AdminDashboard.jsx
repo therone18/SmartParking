@@ -31,6 +31,16 @@ const AdminDashboard = () => {
       .catch((err) => console.error("Reservations error:", err));
   }, []);
 
+  const getUserLabel = (user, fullName) => {
+    if (fullName) return fullName;
+    if (!user) return "Unknown";
+    return (
+      `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+      user.username ||
+      "Unknown"
+    );
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <h1 className="text-3xl font-bold text-indigo-800 mb-6">
@@ -77,7 +87,7 @@ const AdminDashboard = () => {
               <li key={res.id} className="border rounded p-4 bg-slate-50">
                 <p>
                   <strong>User:</strong>{" "}
-                  {res.user_full_name || res.user || "Unknown"}
+                  {getUserLabel(res.user, res.user_full_name)}
                 </p>
                 <p>
                   <strong>Location:</strong>{" "}
@@ -91,7 +101,9 @@ const AdminDashboard = () => {
                 </p>
                 <p>
                   <strong>Created:</strong>{" "}
-                  {new Date(res.created_at).toLocaleString()}
+                  {res.created_at
+                    ? new Date(res.created_at).toLocaleString()
+                    : "N/A"}
                 </p>
               </li>
             ))}
