@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/axios";
+import { useNavigate, Link } from "react-router-dom";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [summary, setSummary] = useState({});
   const [recentReservations, setRecentReservations] = useState([]);
   const [adminUsername, setAdminUsername] = useState("");
@@ -17,8 +19,6 @@ const AdminDashboard = () => {
       .get("/api/summary/slot-utilization/overall/")
       .then((res) => setSummary(res.data))
       .catch((err) => console.error("Summary error:", err));
-
-    console.log(summary);
 
     axiosInstance
       .get("/api/reservations/all/")
@@ -63,12 +63,12 @@ const AdminDashboard = () => {
           <h2 className="text-xl font-semibold text-slate-900">
             Recent Reservations
           </h2>
-          <a
-            href="/dashboard/admin/reservations"
+          <Link
+            to="/dashboard/admin/reservations"
             className="text-blue-500 hover:underline text-sm"
           >
             View All
-          </a>
+          </Link>
         </div>
         {recentReservations.length === 0 ? (
           <p className="text-gray-500">No recent reservations.</p>
@@ -111,7 +111,6 @@ const AdminDashboard = () => {
   );
 };
 
-
 const SummaryCard = ({ title, value, color }) => {
   const bgColor = {
     blue: "bg-blue-100 text-blue-700",
@@ -127,14 +126,13 @@ const SummaryCard = ({ title, value, color }) => {
   );
 };
 
-
 const AdminNavLink = ({ to, label }) => (
-  <a
-    href={to}
+  <Link
+    to={to}
     className="bg-white border rounded shadow p-4 text-center hover:bg-gray-50 transition"
   >
     <span className="font-medium text-slate-900">{label}</span>
-  </a>
+  </Link>
 );
 
 const LogoutButton = () => (
