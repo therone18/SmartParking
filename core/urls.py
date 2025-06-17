@@ -4,7 +4,7 @@ from core import views
 urlpatterns = [
 
     # -------------------------------
-    # Auth & User Management
+    #  Auth & User Management
     # -------------------------------
     path('register/', views.RegisterView.as_view(), name='register'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
@@ -15,17 +15,16 @@ urlpatterns = [
     path('users/<int:id>/reactivate/', views.ReactivateUserView.as_view(), name='reactivate-user'),
 
     # -------------------------------
-    # Parking Locations
+    #  Parking Locations
     # -------------------------------
     path('locations/', views.ParkingLocationListCreateView.as_view(), name='location-list-create'),
     path('locations/search/', views.ParkingLocationSearchView.as_view(), name='location-search'),
     path('locations/<int:pk>/', views.ParkingLocationDetailView.as_view(), name='location-detail'),
-    #path('locations/<int:id>/users/', views.UsersByLocationView.as_view(), name='location-users'),
     path('locations/<int:pk>/reservations/', views.LocationReservationsView.as_view(), name='location-reservations'),
     path('locations-dashboard/', views.AdminLocationDashboardView.as_view(), name='admin-location-dashboard'),
 
     # -------------------------------
-    # Parking Slots
+    #  Parking Slots
     # -------------------------------
     path('slots/<int:location_id>/', views.ParkingSlotListView.as_view(), name='slot-list'),
     path('slots/create/', views.ParkingSlotCreateView.as_view(), name='create-slot'),
@@ -35,7 +34,7 @@ urlpatterns = [
     path('slots/<int:pk>/unlock/', views.UnlockSlotView.as_view(), name='unlock-slot'),
 
     # -------------------------------
-    # Reservations
+    #  Reservations
     # -------------------------------
     path('reservations/', views.ReservationCreateView.as_view(), name='reservation-create'),
     path('reservations/me/', views.MyReservationsView.as_view(), name='my-reservations'),
@@ -50,7 +49,7 @@ urlpatterns = [
     path('reservations/<int:pk>/out/', views.ReservationCheckOutView.as_view(), name='reservation-checkout'),
 
     # -------------------------------
-    # Summaries / Analytics
+    #  Summaries / Analytics
     # -------------------------------
     path('summary/slot-utilization/', views.SlotUtilizationSummaryView.as_view(), name='slot-utilization-summary'),
     path('summary/slot-utilization/overall/', views.OverallSlotUtilizationView.as_view(), name='overall-slot-utilization'),
@@ -59,9 +58,8 @@ urlpatterns = [
     path('summary/slot-overdue/', views.OverdueSlotSummaryView.as_view(), name='slot-overdue-summary'),
 
     # -------------------------------
-    # System
+    #  System / Dev Tools
     # -------------------------------
-    #path('system/healthcheck/', views.HealthCheckView.as_view(), name='health-check'),
-    
-    path("test-cors/", views.TestCORSView.as_view(), name="test-cors"),
+    # path('system/healthcheck/', views.HealthCheckView.as_view(), name='health-check'),
+    path('test-cors/', views.TestCORSView.as_view(), name='test-cors'),
 ]

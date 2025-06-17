@@ -10,8 +10,8 @@ from core.serializers import ReservationSerializer, ReservationListSerializer
 
 class ReservationCreateView(generics.CreateAPIView):
     """
-    Authenticated users can create a reservation.
-    Upon creation, the associated slot is marked unavailable.
+    Create a reservation for an available slot.
+    Automatically marks the slot as unavailable.
     """
     serializer_class = ReservationSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -24,7 +24,7 @@ class ReservationCreateView(generics.CreateAPIView):
 
 class MyReservationsView(generics.ListAPIView):
     """
-    List all reservations belonging to the authenticated user.
+    List all reservations of the authenticated user.
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -36,7 +36,7 @@ class MyReservationsView(generics.ListAPIView):
 
 class AllReservationsView(generics.ListAPIView):
     """
-    Admin-only view of all reservations in the system.
+    Admin-only: View all reservations in the system.
     """
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
@@ -45,7 +45,7 @@ class AllReservationsView(generics.ListAPIView):
 
 class ReservationDetailView(generics.RetrieveAPIView):
     """
-    Retrieve reservation details by ID.
+    Retrieve details of a specific reservation.
     """
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
@@ -54,8 +54,8 @@ class ReservationDetailView(generics.RetrieveAPIView):
 
 class ReservationDeleteView(generics.DestroyAPIView):
     """
-    Users can cancel their reservation.
-    Cancelling frees up the associated slot.
+    Cancel a reservation and free up the associated slot.
+    Users can cancel their own; Admins can cancel any.
     """
     queryset = Reservation.objects.all()
     permission_classes = [permissions.IsAuthenticated]
@@ -69,12 +69,13 @@ class ReservationDeleteView(generics.DestroyAPIView):
         reservation.slot.save()
         reservation.delete()
 
-        return Response({"message": "Reservation cancelled, slot marked available."}, status=status.HTTP_200_OK)
+        return Response({"message": "Reservation cancelled, slot marked available."}, status=200)
 
 
 class ReservationCheckInView(APIView):
     """
-    User check-in (logs time they parked).
+    Mark check-in time for a reservation.
+    Only the reservation owner may check in.
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -87,8 +88,8 @@ class ReservationCheckInView(APIView):
 
 class ReservationCheckOutView(APIView):
     """
-    User check-out (logs time they left).
-    Slot becomes available after check-out.
+    Mark check-out time for a reservation.
+    Frees up the associated slot.
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -98,21 +99,22 @@ class ReservationCheckOutView(APIView):
         reservation.slot.is_available = True
         reservation.slot.save()
         reservation.save()
-        return Response({"message": "Check-out successful", "checked_out_at": reservation.last_park_out}, status=200)
+        return Response({
+            "message": "Check-out successful",
+            "checked_out_at": reservation.last_park_out
+        }, status=200)
 
 
 class ReservationStatusUpdateView(APIView):
     """
-    Allows authenticated users to cancel their reservation.
-    Admins can update status to any allowed value.
+    Update reservation status.
+    - Users: can only cancel their own reservations.
+    - Admins: can update to any allowed status.
     """
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request, pk):
-        try:
-            reservation = Reservation.objects.get(id=pk)
-        except Reservation.DoesNotExist:
-            return Response({"error": "Reservation not found."}, status=404)
+        reservation = get_object_or_404(Reservation, id=pk)
 
         if request.user != reservation.user and not request.user.is_staff:
             return Response({"error": "You do not have permission to update this reservation."}, status=403)
@@ -123,8 +125,9 @@ class ReservationStatusUpdateView(APIView):
         if not new_status:
             return Response({"error": "Status is required."}, status=400)
         if new_status not in allowed_statuses:
-            return Response({"error": f"Invalid status. Allowed: {', '.join(allowed_statuses)}."}, status=400)
-
+            return Response({
+                "error": f"Invalid status. Allowed: {', '.join(allowed_statuses)}."
+            }, status=400)
         if not request.user.is_staff and new_status != "Cancelled":
             return Response({"error": "You can only cancel your own reservations."}, status=403)
 
@@ -143,7 +146,7 @@ class ReservationStatusUpdateView(APIView):
 
 class UploadReceiptView(APIView):
     """
-    Uploads a receipt image for a reservation.
+    Upload a payment receipt for a reservation.
     Automatically sets status to 'Processing'.
     """
     permission_classes = [permissions.IsAuthenticated]
@@ -152,29 +155,26 @@ class UploadReceiptView(APIView):
         reservation = get_object_or_404(Reservation, pk=pk)
 
         if reservation.user != request.user:
-            return Response({'detail': 'Not allowed.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'detail': 'Not allowed.'}, status=403)
         if 'receipt' not in request.FILES:
-            return Response({'detail': 'No receipt uploaded.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'No receipt uploaded.'}, status=400)
 
         reservation.receipt = request.FILES['receipt']
         reservation.status = 'Processing'
         reservation.save()
 
-        return Response({'detail': 'Receipt uploaded successfully.'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Receipt uploaded successfully.'}, status=200)
 
 
 class ApproveReservationView(APIView):
     """
-    Admins can approve a reservation if it is in 'Processing' state
-    and has a receipt.
+    Admin: Approve a reservation that has a receipt and is in 'Processing' status.
+    Sets status to 'Reserved'.
     """
     permission_classes = [permissions.IsAdminUser]
 
     def post(self, request, pk):
-        try:
-            reservation = Reservation.objects.get(pk=pk)
-        except Reservation.DoesNotExist:
-            return Response({'detail': 'Reservation not found.'}, status=status.HTTP_404_NOT_FOUND)
+        reservation = get_object_or_404(Reservation, pk=pk)
 
         if reservation.status != "Processing":
             return Response({'detail': 'Only "Processing" reservations can be approved.'}, status=400)

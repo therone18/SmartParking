@@ -1,5 +1,3 @@
-# core/views/location_views.py
-
 from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,6 +12,10 @@ from core.serializers import (
 
 
 class ParkingLocationListCreateView(generics.ListCreateAPIView):
+    """
+    GET: Public – List all parking locations.
+    POST: Admin only – Create a new parking location.
+    """
     queryset = ParkingLocation.objects.all()
     serializer_class = ParkingLocationSerializer
 
@@ -24,31 +26,24 @@ class ParkingLocationListCreateView(generics.ListCreateAPIView):
 
 
 class ParkingLocationDetailView(generics.RetrieveAPIView):
+    """
+    GET: Public – Retrieve a specific location with associated slots.
+    """
     queryset = ParkingLocation.objects.all()
-    serializer_class = ParkingLocationWithSlotsSerializer 
+    serializer_class = ParkingLocationWithSlotsSerializer
     permission_classes = [permissions.AllowAny]
 
-    # Optional: your custom destroy logic (can be kept or moved to a different view)
-    def destroy(self, request, *args, **kwargs):
-        location = self.get_object()
-        slots = location.parkingslot_set.all()
+    # NOTE: Deletion logic moved to a dedicated admin-only view.
+    # If needed, safely move destroy logic to a RetrieveUpdateDestroyView elsewhere.
 
-        for slot in slots:
-            if Reservation.objects.filter(slot=slot).exists():
-                return Response(
-                    {"error": "Cannot delete location: some slots have reservations."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-        if slots.exists():
-            return Response(
-                {"error": "Cannot delete location: it still has parking slots."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        return super().destroy(request, *args, **kwargs)
 
 class ParkingLocationSearchView(APIView):
+    """
+    GET: Search parking locations by name.
+    Example: /api/locations/search/?q=Ayala
+    """
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request):
         query = request.query_params.get("q", "")
         locations = ParkingLocation.objects.filter(name__icontains=query)
@@ -57,6 +52,11 @@ class ParkingLocationSearchView(APIView):
 
 
 class LocationReservationsView(APIView):
+    """
+    Admin only:
+    GET: List all reservations for a given parking location.
+    URL: /api/locations/<pk>/users/
+    """
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request, pk):
@@ -68,6 +68,11 @@ class LocationReservationsView(APIView):
 
 
 class AdminLocationDashboardView(APIView):
+    """
+    Admin only:
+    GET: Return all locations with their associated slots.
+    Used by admin panel for location-slot management.
+    """
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request):
@@ -77,6 +82,9 @@ class AdminLocationDashboardView(APIView):
 
 
 class TestCORSView(APIView):
+    """
+    Public test endpoint to check if CORS is properly configured.
+    """
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):

@@ -8,8 +8,9 @@ from core.models import Reservation, ParkingLocation, ParkingSlot
 
 class SlotUtilizationSummaryView(APIView):
     """
-    Returns utilization stats per location for the last 7 days.
-    Utilization is calculated as: (# of reservations) / (total slots at that location).
+    Admin-only:
+    Returns slot utilization statistics for each parking location over the past 7 days.
+    Utilization per day = (# of reservations that day) / (total slots at that location).
     """
     permission_classes = [IsAdminUser]
 
@@ -21,15 +22,13 @@ class SlotUtilizationSummaryView(APIView):
         for location in ParkingLocation.objects.all():
             total_slots = ParkingSlot.objects.filter(location=location).count()
 
-            for date in reversed(past_days):
+            for date in reversed(past_days):  # Oldest to newest
                 day_reservations = Reservation.objects.filter(
                     slot__location=location,
                     start_time__date=date
                 ).count()
 
-                utilization = (
-                    day_reservations / total_slots if total_slots else 0
-                )
+                utilization = (day_reservations / total_slots) if total_slots else 0
 
                 data.append({
                     "location_id": location.id,
@@ -37,7 +36,7 @@ class SlotUtilizationSummaryView(APIView):
                     "date": date,
                     "total_slots": total_slots,
                     "reservations": day_reservations,
-                    "utilization_rate": round(utilization, 2),
+                    "utilization_rate": round(utilization, 2),  # as decimal (e.g. 0.75)
                 })
 
         return Response(data)
@@ -45,31 +44,32 @@ class SlotUtilizationSummaryView(APIView):
 
 class OverallSlotUtilizationView(APIView):
     """
-    Returns overall slot utilization across all locations based on current active/reserved reservations.
+    Admin-only:
+    Returns current overall slot utilization across all locations.
+    Based on how many slots are currently 'Reserved' or 'Active'.
     """
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        locations = ParkingLocation.objects.all()
         total_slots = ParkingSlot.objects.count()
         active_reservations = Reservation.objects.filter(
             status__in=["Reserved", "Active"]
         ).count()
 
-        utilization_rate = (
-            active_reservations / total_slots if total_slots else 0
-        )
+        utilization_rate = (active_reservations / total_slots) if total_slots else 0
 
         return Response({
-            "total_locations": locations.count(),
+            "total_locations": ParkingLocation.objects.count(),
             "total_slots": total_slots,
             "active_reservations": active_reservations,
-            "utilization_rate": round(utilization_rate, 2)
+            "utilization_rate": round(utilization_rate, 2),
         })
+
 
 class DailySummaryView(APIView):
     """
-    Returns the number of reservations made per day for the last 7 days.
+    Admin-only:
+    Returns total number of reservations per day over the past 7 days.
     """
     permission_classes = [IsAdminUser]
 
@@ -80,18 +80,18 @@ class DailySummaryView(APIView):
         for i in range(7):
             day = today - timedelta(days=i)
             count = Reservation.objects.filter(start_time__date=day).count()
-
             summary.append({
                 "date": day,
                 "total_reservations": count
             })
 
-        return Response(summary[::-1])  # Oldest to newest
+        return Response(summary[::-1])  # Reverse to show oldest to newest
 
 
 class SlotActiveSummaryView(APIView):
     """
-    Returns the number of currently active reservations (status='Active').
+    Admin-only:
+    Returns the count of reservations currently marked as 'Active'.
     """
     permission_classes = [IsAdminUser]
 
@@ -102,7 +102,8 @@ class SlotActiveSummaryView(APIView):
 
 class OverdueSlotSummaryView(APIView):
     """
-    Returns the number of overdue reservations (status='Overdue').
+    Admin-only:
+    Returns the count of reservations that are currently 'Overdue'.
     """
     permission_classes = [IsAdminUser]
 

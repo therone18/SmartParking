@@ -1,5 +1,6 @@
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 
 from core.models import ParkingSlot, Reservation
@@ -8,7 +9,9 @@ from core.serializers import ParkingSlotSerializer
 
 class ParkingSlotListView(generics.ListAPIView):
     """
-    Get all slots for a specific location.
+    Authenticated:
+    GET: List all parking slots for a specific location.
+    URL: /api/locations/<location_id>/slots/
     """
     serializer_class = ParkingSlotSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -20,7 +23,8 @@ class ParkingSlotListView(generics.ListAPIView):
 
 class ParkingSlotCreateView(generics.CreateAPIView):
     """
-    Admin-only: Create a new parking slot.
+    Admin only:
+    POST: Create a new parking slot under a location.
     """
     queryset = ParkingSlot.objects.all()
     serializer_class = ParkingSlotSerializer
@@ -29,7 +33,8 @@ class ParkingSlotCreateView(generics.CreateAPIView):
 
 class ParkingSlotUpdateView(generics.UpdateAPIView):
     """
-    Admin-only: Update parking slot details.
+    Admin only:
+    PUT/PATCH: Update a parking slot (e.g. availability, floorzone).
     """
     queryset = ParkingSlot.objects.all()
     serializer_class = ParkingSlotSerializer
@@ -38,7 +43,8 @@ class ParkingSlotUpdateView(generics.UpdateAPIView):
 
 class ParkingSlotDeleteView(generics.DestroyAPIView):
     """
-    Admin-only: Delete a parking slot, only if it has no reservations.
+    Admin only:
+    DELETE: Delete a parking slot if it has no reservations.
     """
     queryset = ParkingSlot.objects.all()
     serializer_class = ParkingSlotSerializer
@@ -56,9 +62,11 @@ class ParkingSlotDeleteView(generics.DestroyAPIView):
         return super().delete(request, *args, **kwargs)
 
 
-class LockSlotView(generics.UpdateAPIView):
+class LockSlotView(APIView):
     """
-    Admin-only: Lock a specific parking slot.
+    Admin only:
+    POST: Lock a specific parking slot to prevent reservations.
+    URL: /api/slots/<pk>/lock/
     """
     permission_classes = [permissions.IsAdminUser]
 
@@ -66,12 +74,14 @@ class LockSlotView(generics.UpdateAPIView):
         slot = get_object_or_404(ParkingSlot, pk=pk)
         slot.locked = True
         slot.save()
-        return Response({"message": f"Slot {slot.slot_id} locked."})
+        return Response({"message": f"Slot '{slot.slot_id}' has been locked."}, status=200)
 
 
-class UnlockSlotView(generics.UpdateAPIView):
+class UnlockSlotView(APIView):
     """
-    Admin-only: Unlock a specific parking slot.
+    Admin only:
+    POST: Unlock a parking slot to allow reservations again.
+    URL: /api/slots/<pk>/unlock/
     """
     permission_classes = [permissions.IsAdminUser]
 
@@ -79,4 +89,4 @@ class UnlockSlotView(generics.UpdateAPIView):
         slot = get_object_or_404(ParkingSlot, pk=pk)
         slot.locked = False
         slot.save()
-        return Response({"message": f"Slot {slot.slot_id} unlocked."})
+        return Response({"message": f"Slot '{slot.slot_id}' has been unlocked."}, status=200)
