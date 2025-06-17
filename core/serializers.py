@@ -1,3 +1,4 @@
+from datetime import timezone
 from rest_framework import serializers, generics, status, permissions
 from django.contrib.auth.models import User
 from core.models import ParkingLocation, ParkingSlot, Reservation
@@ -47,6 +48,38 @@ class ParkingSlotSerializer(serializers.ModelSerializer):
         fields = ['id', 'location', 'slot_id', 'floorzone_number', 'is_available', 'locked']
         read_only_fields = ['id', 'slot_id']
         
+class ParkingSlotWithCurrentReservationSerializer(serializers.ModelSerializer):
+    current_reservation = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ParkingSlot
+        fields = ['id', 'slot_id', 'locked', 'current_reservation']
+
+    def get_current_reservation(self, slot):
+        now = timezone.now()
+        reservation = Reservation.objects.filter(
+            slot=slot,
+            last_park_in__lte=now,
+            last_park_out__isnull=True  # means currently parked
+        ).select_related('user').first()
+
+        if reservation:
+            return {
+                "user": {
+                    "id": reservation.user.id,
+                    "name": reservation.user.get_full_name(),
+                    "email": reservation.user.email,
+                },
+                "car": {
+                    "make": reservation.car_make,
+                    "model": reservation.car_model,
+                    "plate_number": reservation.plate_number,
+                    "vehicle_type": reservation.vehicle_type,
+                },
+                "start_time": reservation.last_park_in,
+            }
+        return None
+
 
 # ------------------------------
 # Parking Location Serializers
