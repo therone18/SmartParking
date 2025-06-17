@@ -13,6 +13,7 @@ const ReservationDetails = () => {
       try {
         const res = await axiosInstance.get(`/api/reservations/${id}/`);
         setReservation(res.data);
+        console.log(reservation);
       } catch (error) {
         console.error("Failed to fetch reservation:", error);
         alert("Failed to load reservation.");
