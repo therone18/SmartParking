@@ -36,9 +36,13 @@ const MakeReservation = () => {
     const fetchSlotDetails = async () => {
       if (formData.location) {
         try {
-            console.log("fetching location's slots")
-          const res = await axiosInstance.get(`/api/locations/${formData.location}/`);
+          console.log("fetching location's slots");
+          const res = await axiosInstance.get(
+            `/api/locations/${formData.location}/`
+          );
           setSelectedLocation(res.data);
+          console.log(res.data);
+          console.log(selectedLocation)
         } catch (error) {
           console.error("Error fetching location details:", error);
         }
@@ -67,7 +71,10 @@ const MakeReservation = () => {
       const res = await axiosInstance.post("/api/reservations/", formData);
       navigate(`/payment/${res.data.id}`);
     } catch (error) {
-      console.error("Reservation failed:", error.response?.data || error.message);
+      console.error(
+        "Reservation failed:",
+        error.response?.data || error.message
+      );
       alert("Reservation failed. Please try again.");
     }
   };
@@ -75,12 +82,16 @@ const MakeReservation = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center py-12 px-4">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-3xl">
-        <h2 className="text-2xl font-bold mb-6 text-center text-slate-900">Make a Reservation</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-slate-900">
+          Make a Reservation
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Location selection */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-slate-700">Select Location</label>
+            <label className="block mb-1 text-sm font-medium text-slate-700">
+              Select Location
+            </label>
             <select
               name="location"
               value={formData.location}
@@ -100,7 +111,9 @@ const MakeReservation = () => {
           {/* Slot selection visual */}
           {selectedLocation?.slots?.length > 0 && (
             <div>
-              <label className="block mb-2 font-medium text-slate-700">Available Slots</label>
+              <label className="block mb-2 font-medium text-slate-700">
+                Available Slots
+              </label>
               <div className="grid grid-cols-4 gap-3 p-2 border border-gray-200 rounded bg-slate-100">
                 {selectedLocation.slots.map((slot) => (
                   <button
@@ -126,7 +139,9 @@ const MakeReservation = () => {
           {/* Time inputs */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block mb-1 text-sm font-medium text-slate-700">Start Time</label>
+              <label className="block mb-1 text-sm font-medium text-slate-700">
+                Start Time
+              </label>
               <input
                 type="datetime-local"
                 name="start_time"
@@ -137,7 +152,9 @@ const MakeReservation = () => {
               />
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium text-slate-700">End Time</label>
+              <label className="block mb-1 text-sm font-medium text-slate-700">
+                End Time
+              </label>
               <input
                 type="datetime-local"
                 name="end_time"
