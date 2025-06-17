@@ -36,6 +36,7 @@ const MakeReservation = () => {
     const fetchSlotDetails = async () => {
       if (formData.location) {
         try {
+            console.log("fetching location's slots")
           const res = await axiosInstance.get(`/api/locations/${formData.location}/`);
           setSelectedLocation(res.data);
         } catch (error) {
