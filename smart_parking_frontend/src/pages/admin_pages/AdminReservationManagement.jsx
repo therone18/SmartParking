@@ -149,7 +149,7 @@ const AdminReservationManagement = () => {
                 </td>
                 <td className="border px-3 py-1 capitalize">{res.status}</td>
                 <td className="border px-3 py-1 text-center">
-                  {res.status === "processing" && (
+                  {res.status === "Processing" && (
                     <button
                       disabled={approvingIds.has(res.id)}
                       onClick={() => approveReservation(res.id)}
