@@ -1,3 +1,4 @@
+// ...imports
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axios";
@@ -26,7 +27,7 @@ const MyReservations = () => {
 
   const handleCancel = async (id) => {
     try {
-      await axiosInstance.put(`/api/reservations/${id}/status/`, {
+      await axiosInstance.patch(`/api/reservations/${id}/status/`, {
         status: "Cancelled",
       });
       setReservations((prev) =>
@@ -40,11 +41,28 @@ const MyReservations = () => {
     }
   };
 
+  const handleCheckOut = async (id) => {
+    try {
+      await axiosInstance.patch(`/api/reservations/${id}/status/`, {
+        status: "Checked-out",
+      });
+      setReservations((prev) =>
+        prev.map((res) =>
+          res.id === id ? { ...res, status: "Checked-out" } : res
+        )
+      );
+    } catch (error) {
+      alert("Unable to check out.");
+      console.error(error.response?.data || error.message);
+    }
+  };
+
   const canBeCancelled = (res) => {
-    return (
-      res.status === "Reserved" &&
-      dayjs(res.start_time).isAfter(dayjs())
-    );
+    return res.status === "Reserved" && dayjs(res.start_time).isAfter(dayjs());
+  };
+
+  const canCheckOut = (res) => {
+    return res.status === "Active";
   };
 
   const filteredReservations =
@@ -133,6 +151,10 @@ const MyReservations = () => {
                           ? "bg-red-100 text-red-600"
                           : res.status === "Overdue"
                           ? "bg-amber-100 text-amber-600"
+                          : res.status === "Active"
+                          ? "bg-blue-100 text-blue-700"
+                          : res.status === "Checked-out"
+                          ? "bg-gray-100 text-gray-800"
                           : "bg-gray-200 text-gray-700"
                       }`}
                     >
@@ -147,6 +169,16 @@ const MyReservations = () => {
                       className="mt-2 w-fit bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
                     >
                       Cancel Reservation
+                    </button>
+                  )}
+
+                  {/* Check Out Button */}
+                  {canCheckOut(res) && (
+                    <button
+                      onClick={() => handleCheckOut(res.id)}
+                      className="mt-2 w-fit bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                    >
+                      Check Out
                     </button>
                   )}
                 </div>
