@@ -161,7 +161,7 @@ const AdminReservationManagement = () => {
                         {approvingIds.has(r.id) ? "Approving..." : "Approve"}
                       </button>
                     )}
-                    {/* You can add more action buttons here (e.g. cancel, view details) */}
+                    
                   </td>
                 </tr>
               ))
