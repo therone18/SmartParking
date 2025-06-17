@@ -44,11 +44,11 @@ const MyReservations = () => {
   const handleCheckOut = async (id) => {
     try {
       await axiosInstance.put(`/api/reservations/${id}/status/`, {
-        status: "Checked-out",
+        status: "Complete",
       });
       setReservations((prev) =>
         prev.map((res) =>
-          res.id === id ? { ...res, status: "Checked-out" } : res
+          res.id === id ? { ...res, status: "Complete" } : res
         )
       );
     } catch (error) {
