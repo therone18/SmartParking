@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../services/axios";
 import QuickActions from "../../components/QuickActions";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [reservations, setReservations] = useState([]);
   const [profile, setProfile] = useState({});
   const [recent, setRecent] = useState([]);
   const [locations, setLocations] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getData = async () => {
@@ -18,6 +21,7 @@ const Dashboard = () => {
         ]);
 
         const all = res1.data;
+        console.log(res1)
         setReservations(all.filter((r) => r.status === "Active"));
         setRecent(
           all
@@ -94,7 +98,7 @@ const Dashboard = () => {
             </h2>
             {/* 🔗 View Full History Button */}
             <button
-              onClick={() => (window.location.href = "/reservations/history")}
+              onClick={() => (navigate("/reservations/history"))}
               className="text-sm text-blue-500 hover:underline"
             >
               View All History →
