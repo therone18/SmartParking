@@ -27,7 +27,7 @@ const MyReservations = () => {
 
   const handleCancel = async (id) => {
     try {
-      await axiosInstance.patch(`/api/reservations/${id}/status/`, {
+      await axiosInstance.put(`/api/reservations/${id}/status/`, {
         status: "Cancelled",
       });
       setReservations((prev) =>
@@ -43,7 +43,7 @@ const MyReservations = () => {
 
   const handleCheckOut = async (id) => {
     try {
-      await axiosInstance.patch(`/api/reservations/${id}/status/`, {
+      await axiosInstance.put(`/api/reservations/${id}/status/`, {
         status: "Checked-out",
       });
       setReservations((prev) =>
