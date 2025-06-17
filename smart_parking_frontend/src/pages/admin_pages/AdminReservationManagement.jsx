@@ -116,7 +116,7 @@ const AdminReservationManagement = () => {
               <tr
                 key={res.id}
                 className={`${
-                  res.status === "processing" ? "bg-yellow-50" : "bg-white"
+                  res.status === "Processing" ? "bg-yellow-50" : "bg-white"
                 } hover:bg-indigo-50`}
               >
                 <td className="border px-3 py-1">
