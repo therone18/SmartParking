@@ -32,7 +32,7 @@ A web-based Smart Parking Management system built as part of a timed Trial Proje
 
 ---
 
-## 🛠️ Admin Features
+##  Admin Features
 
 -  Admin login (separate from user login)  
 -  Manage parking locations and slots:  
