@@ -193,7 +193,7 @@ const AdminLocationManagement = () => {
                 <SlotCard
                   key={slot.id}
                   slot={slot}
-                  onToggle={() => toggleSlotLock(slot.id, slot.locked)}
+                  onLockToggle={() => toggleSlotLock(slot.id, slot.locked)}
                   onDelete={() => deleteSlot(slot.id)}
                 />
               ))}
