@@ -100,12 +100,6 @@ class ReservationSerializer(serializers.ModelSerializer):
         return data
 
 
-# Serializer for individual parking slots
-class ParkingSlotSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ParkingSlot
-        fields = ['id', 'slot_id', 'locked']
-
 # Serializer for a location + all its slots
 class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):
     slots = ParkingSlotSerializer(many=True, source='parkingslot_set', read_only=True)
