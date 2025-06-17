@@ -15,12 +15,20 @@ const ReservationHistory = () => {
     const fetchReservations = async () => {
       try {
         const response = await axiosInstance.get("/api/reservations/me/");
-        const completed = response.data.filter(
-          (res) => res.status === "Complete" || res.status === "Cancelled"
-        );
-        setReservations(completed);
+        const raw = response.data?.data || response.data;
+
+        if (Array.isArray(raw)) {
+          const completed = raw.filter(
+            (res) => res.status === "Complete" || res.status === "Cancelled"
+          );
+          setReservations(completed);
+        } else {
+          console.warn("Unexpected reservation format:", response.data);
+          setReservations([]);
+        }
       } catch (error) {
         console.error("Failed to load reservation history:", error);
+        setReservations([]);
       } finally {
         setLoading(false);
       }
