@@ -5,7 +5,7 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
-from core.models import Reservation
+from core.models import Reservation, ParkingLocation
 from core.serializers import UserSerializer, ReservationSerializer
 
 
@@ -76,3 +76,33 @@ class ApproveReservationView(APIView):
 
         serializer = ReservationSerializer(reservation)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AdminDeleteLocationView(APIView):
+    """
+    Admin-only: Deletes a specific parking location if it has no reservations or slots.
+    """
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        location = get_object_or_404(ParkingLocation, pk=pk)
+
+        # Check if location has related reservations
+        if location.reservation_set.exists():
+            return Response(
+                {"detail": "Cannot delete a location with existing reservations."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if location has slots
+        if location.parkingslot_set.exists():
+            return Response(
+                {"detail": "Please delete all slots in this location before deletion."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        location.delete()
+        return Response(
+            {"message": "Location deleted successfully."},
+            status=status.HTTP_200_OK
+        )
