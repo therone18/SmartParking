@@ -1,4 +1,3 @@
-// ...imports
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axios";
@@ -14,9 +13,11 @@ const MyReservations = () => {
     const fetchReservations = async () => {
       try {
         const response = await axiosInstance.get("/api/reservations/me/");
-        setReservations(response.data);
+        const data = response.data?.data;
+        setReservations(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching reservations:", error.response?.data || error.message);
+        setReservations([]);
       } finally {
         setLoading(false);
       }
@@ -86,7 +87,9 @@ const MyReservations = () => {
 
         {/* Filter */}
         <div className="mb-4">
-          <label className="text-sm font-medium text-gray-700 mr-2">Filter by status:</label>
+          <label className="text-sm font-medium text-gray-700 mr-2">
+            Filter by status:
+          </label>
           <select
             className="border rounded px-3 py-1 text-sm"
             value={filterStatus}
@@ -108,7 +111,9 @@ const MyReservations = () => {
         {loading ? (
           <p className="text-center text-gray-500">Loading your reservations...</p>
         ) : filteredReservations.length === 0 ? (
-          <p className="text-center text-gray-500">No reservations match the selected filter.</p>
+          <p className="text-center text-gray-500">
+            No reservations match the selected filter.
+          </p>
         ) : (
           <ul className="space-y-4 mb-6">
             {filteredReservations.map((res) => (
@@ -123,7 +128,7 @@ const MyReservations = () => {
                   </p>
                   <p>
                     <span className="text-sm text-gray-500">Slot ID:</span>{" "}
-                    <span className="font-medium">{res.slot}</span>
+                    <span className="font-medium">{res.slot_id || res.slot}</span>
                   </p>
                   <p>
                     <span className="text-sm text-gray-500">Vehicle:</span>{" "}

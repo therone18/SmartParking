@@ -20,9 +20,10 @@ const Dashboard = () => {
           axiosInstance.get("/api/locations/"),
         ]);
 
-        const all = res1.data;
-        console.log(res1)
+        const all = Array.isArray(res1.data.data) ? res1.data.data : [];
+
         setReservations(all.filter((r) => r.status === "Active"));
+
         setRecent(
           all
             .filter(
@@ -96,9 +97,8 @@ const Dashboard = () => {
             <h2 className="text-xl font-semibold text-slate-900">
               Recent Parking Activity
             </h2>
-            {/* 🔗 View Full History Button */}
             <button
-              onClick={() => (navigate("/reservations/history"))}
+              onClick={() => navigate("/reservations/history")}
               className="text-sm text-blue-500 hover:underline"
             >
               View All History →
@@ -142,7 +142,7 @@ const Dashboard = () => {
         </div>
 
         {/* Available Locations */}
-        <div className="bg-white shadow rounded-lg p-6 ">
+        <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-xl font-semibold text-slate-900 mb-3">
             Available Locations
           </h2>
