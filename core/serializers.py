@@ -108,7 +108,7 @@ class ParkingSlotSerializer(serializers.ModelSerializer):
 
 # Serializer for a location + all its slots
 class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):
-    slots = ParkingSlotSerializer(many=True, source='parkingslot_set')
+    slots = ParkingSlotSerializer(many=True, source='parkingslot_set', read_only=True)
 
     class Meta:
         model = ParkingLocation
@@ -116,7 +116,7 @@ class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'address',
-            'slots',  # Related slot objects
+            'slots',  # This will now be a list of detailed slot objects
             'google_maps_url',
             'latitude',
             'longitude'
