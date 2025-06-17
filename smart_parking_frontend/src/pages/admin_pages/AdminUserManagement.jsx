@@ -7,7 +7,7 @@ const AdminUserManagement = () => {
   const [togglingUserId, setTogglingUserId] = useState(null);
   const [error, setError] = useState("");
 
-  // Fetch users from API
+  // Fetch users from API and get info
   const fetchUsers = async () => {
     setLoading(true);
     setError("");
