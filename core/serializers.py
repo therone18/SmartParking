@@ -36,11 +36,9 @@ class ParkingLocationSerializer(serializers.ModelSerializer):
 class ParkingSlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParkingSlot
-        fields = ['id', 'location', 'floorzone_number', 'is_available']
-        read_only_fields = ['slot_id']
-        location = serializers.CharField(required=True)
-        slot_id = serializers.CharField(required=True)
-        floorzone_number = serializers.CharField(required=True)
+        fields = ['id', 'location', 'slot_id', 'floorzone_number', 'is_available']
+        read_only_fields = ['id', 'slot_id']
+
         
 class SlotUtilizationSerializer(serializers.Serializer):
     location_id = serializers.IntegerField()
