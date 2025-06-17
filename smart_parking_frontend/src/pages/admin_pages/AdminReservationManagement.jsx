@@ -50,6 +50,12 @@ const AdminReservationManagement = () => {
     return <p className="p-6 text-slate-600">Loading reservations...</p>;
   }
 
+  const getUserLabel = (user) => {
+    if (!user) return <span className="italic text-red-600">[No user]</span>;
+    const name = `${user.first_name || ""} ${user.last_name || ""}`.trim();
+    return name || user.username || <span className="italic text-red-600">[No user]</span>;
+  };
+
   return (
     <div className="p-6 space-y-8">
       <h1 className="text-2xl font-bold text-slate-900">Admin Reservation Management</h1>
@@ -67,12 +73,12 @@ const AdminReservationManagement = () => {
               >
                 <div>
                   <p>
-                    <span className="font-semibold">
-                      {res.user?.name ?? <span className="italic text-red-600">[No user]</span>}
-                    </span>{" "}
+                    <span className="font-semibold">{getUserLabel(res.user)}</span>{" "}
                     -{" "}
                     <span className="italic">
-                      {res.car ? `${res.car.vehicle_make} ${res.car.vehicle_model}` : <span className="text-red-600">[No car]</span>}
+                      {res.vehicle_make && res.vehicle_model
+                        ? `${res.vehicle_make} ${res.vehicle_model}`
+                        : <span className="text-red-600">[No car]</span>}
                     </span>
                   </p>
                   <p className="text-sm text-yellow-700">
@@ -114,23 +120,17 @@ const AdminReservationManagement = () => {
                 } hover:bg-indigo-50`}
               >
                 <td className="border px-3 py-1">
-                  {res.user ? (
-                    <>
-                      {res.user.name}
-                      <br />
-                      <small className="text-xs text-gray-500">{res.user.email}</small>
-                    </>
-                  ) : (
-                    <span className="italic text-red-600">[No user]</span>
-                  )}
+                  {getUserLabel(res.user)}
+                  <br />
+                  <small className="text-xs text-gray-500">{res.user?.email}</small>
                 </td>
 
                 <td className="border px-3 py-1">
-                  {res.car ? (
+                  {res.vehicle_make && res.vehicle_model ? (
                     <>
-                      {res.car.vehicle_make} {res.car.vehicle_model}
+                      {res.vehicle_make} {res.vehicle_model}
                       <br />
-                      <small className="text-xs text-gray-500">{res.car.plate_number}</small>
+                      <small className="text-xs text-gray-500">{res.plate_number}</small>
                     </>
                   ) : (
                     <span className="italic text-red-600">[No car]</span>
