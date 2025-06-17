@@ -26,7 +26,7 @@ const MyReservations = () => {
 
   const handleCancel = async (id) => {
     try {
-      await axiosInstance.patch(`/api/reservations/${id}/status/`, {
+      await axiosInstance.put(`/api/reservations/${id}/status/`, {
         status: "Cancelled",
       });
       setReservations((prev) =>
