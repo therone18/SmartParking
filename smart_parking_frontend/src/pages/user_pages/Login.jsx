@@ -36,8 +36,8 @@ const Login = () => {
       });
 
       // Store tokens in localStorage
-      localStorage.setItem("access", response.data.access);
-      localStorage.setItem("refresh", response.data.refresh);
+      localStorage.setItem("access_token", response.data.access);
+      localStorage.setItem("refresh_token", response.data.refresh);
 
       console.log("✅ Login successful");
       navigate("/dashboard");

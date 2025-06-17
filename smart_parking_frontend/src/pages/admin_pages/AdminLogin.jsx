@@ -38,14 +38,15 @@ const AdminLogin = () => {
         </h1>
 
         {error && (
-          <div className="mb-4 text-red-500 text-sm text-center">
-            {error}
-          </div>
+          <div className="mb-4 text-red-500 text-sm text-center">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-1">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-slate-700 mb-1"
+            >
               Username
             </label>
             <input
@@ -59,7 +60,10 @@ const AdminLogin = () => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-slate-700 mb-1"
+            >
               Password
             </label>
             <input
