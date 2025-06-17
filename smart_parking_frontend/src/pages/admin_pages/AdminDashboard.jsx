@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/axios";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
   const [summary, setSummary] = useState({});
   const [recentReservations, setRecentReservations] = useState([]);
   const [adminUsername, setAdminUsername] = useState("");
@@ -52,7 +51,7 @@ const AdminDashboard = () => {
         />
         <SummaryCard
           title="Utilization Rate"
-          value={`${(summary.utilization_rate || 0) * 100}%`}
+          value={`${((summary.utilization_rate || 0) * 100).toFixed(2)}%`}
           color="yellow"
         />
       </div>
@@ -64,7 +63,7 @@ const AdminDashboard = () => {
             Recent Reservations
           </h2>
           <Link
-            to="/dashboard/admin/reservations"
+            to="/reservations/management"
             className="text-blue-500 hover:underline text-sm"
           >
             View All
@@ -103,7 +102,7 @@ const AdminDashboard = () => {
       {/* Navigation Panel */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <AdminNavLink to="/locations/management" label="Manage Locations" />
-        <AdminNavLink to="/dashboard/admin/slots" label="Manage Slots" />
+        <AdminNavLink to="/reservations/management" label="Manage Reservations" />
         <AdminNavLink to="/user/management" label="Manage Users" />
         <LogoutButton />
       </div>
