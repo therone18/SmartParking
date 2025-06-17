@@ -6,22 +6,7 @@ const AdminReservationManagement = () => {
   const [loading, setLoading] = useState(true);
   const [approvingIds, setApprovingIds] = useState(new Set());
 
-  // Fetch all reservations
-  const fetchReservations = async () => {
-    setLoading(true);
-    try {
-      const res = await axiosInstance.get("/api/reservations/all/");
-      setReservations(res.data);
-    } catch (error) {
-      console.error("Error fetching reservations:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchReservations();
-  }, []);
+  
 
   // Approve a reservation by ID
   const approveReservation = async (id) => {
