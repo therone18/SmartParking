@@ -170,20 +170,32 @@ class UploadReceiptView(APIView):
 class ApproveReservationView(APIView):
     """
     Admin: Approve a reservation that has a receipt and is in 'Processing' status.
-    Sets status to 'Reserved'.
+    Sets status to 'Reserved' and marks the slot as unavailable.
     """
     permission_classes = [permissions.IsAdminUser]
 
     def post(self, request, pk):
         reservation = get_object_or_404(Reservation, pk=pk)
 
+        # Must be in 'Processing' state
         if reservation.status != "Processing":
             return Response({'detail': 'Only "Processing" reservations can be approved.'}, status=400)
 
+        # Must have uploaded a receipt
         if not reservation.receipt:
             return Response({'detail': 'Cannot approve reservation without a receipt.'}, status=400)
 
+        # Mark slot as unavailable
+        slot = reservation.slot
+        if not slot:
+            return Response({'detail': 'Reservation has no assigned slot.'}, status=400)
+
+        slot.is_available = False
+        slot.save()
+
+        # Update reservation status
         reservation.status = "Reserved"
         reservation.save()
+
         serializer = ReservationSerializer(reservation)
         return Response(serializer.data, status=200)

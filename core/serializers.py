@@ -184,6 +184,16 @@ class ReservationSerializer(serializers.ModelSerializer):
         if slot and not slot.is_available:
             raise serializers.ValidationError("Selected slot is not available.")
         return data
+    
+    def create(self, validated_data):
+        """
+        Override to set initial status and perform any needed logic.
+        """
+        reservation = Reservation.objects.create(
+            **validated_data,
+            status='processing'  # Ensure initial status is set
+        )
+        return reservation
 
 class ReservationListSerializer(serializers.ModelSerializer):
     """
