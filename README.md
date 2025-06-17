@@ -1,8 +1,11 @@
-#  Smart Parking App (MVP)
+
+# Smart Parking App (MVP)
 
 A web-based Smart Parking Management system built as part of a timed Trial Project. It allows users to reserve parking slots and upload payment receipts, while admins can manage locations, slots, users, and view analytics.
 
-##  Tech Stack
+---
+
+## Tech Stack
 
 - **Frontend:** React (Vite) + Tailwind CSS  
 - **Backend:** Django + Django REST Framework  
@@ -13,18 +16,18 @@ A web-based Smart Parking Management system built as part of a timed Trial Proje
 
 ---
 
-##  User Features
+## User Features
 
--  User registration & login  
--  View and edit profile (with password change)  
--  Browse available parking locations  
--  View available slots and make reservations  
--  Upload a payment receipt after making a reservation  
--  Reservation status: "Pending", "Processing", or "Confirmed"  
+- User registration & login  
+- View and edit profile (with password change)  
+- Browse available parking locations  
+- View available slots and make reservations  
+- Upload a payment receipt after making a reservation  
+- Reservation status: "Pending", "Processing", or "Confirmed"  
 
 ---
 
-##  Payment Flow
+## Payment Flow
 
 1. After choosing a slot, the user makes a reservation.  
 2. They are immediately redirected to upload a **QR payment receipt**.  
@@ -32,39 +35,39 @@ A web-based Smart Parking Management system built as part of a timed Trial Proje
 
 ---
 
-##  Admin Features
+## Admin Features
 
--  Admin login (separate from user login)  
--  Manage parking locations and slots:  
+- Admin login (separate from user login)  
+- Manage parking locations and slots:  
   - Add/edit/delete locations  
   - Add/delete slots  
   - Lock/unlock slots  
--  User management:  
+- User management:  
   - View all users  
   - Deactivate/reactivate accounts  
--  Reservation confirmation:  
+- Reservation confirmation:  
   - View all reservations  
   - Review uploaded receipts  
   - Mark reservations as **"Confirmed"**  
--  Analytics (see below)  
+- Analytics (see below)  
 
 ---
 
-##  Admin Analytics
+## Admin Analytics
 
 **Implemented:**
--  Slot utilization summary per location  
--  Chart-ready data format  
--  Basic time-based support (daily summaries)
+- Slot utilization summary per location  
+- Chart-ready data format  
+- Basic time-based support (daily summaries)
 
 **Not Yet Implemented (But Planned):**
--  Peak hour heatmaps  
--  Average parking durations  
--  Most reserved location rankings  
+- Peak hour heatmaps  
+- Average parking durations  
+- Most reserved location rankings  
 
 ---
 
-##  API Overview
+## API Overview
 
 - `/api/auth/register/`, `/login/`, `/profile/`, `/profile/update/`  
 - `/api/profile/change-password/`  
@@ -78,7 +81,7 @@ A web-based Smart Parking Management system built as part of a timed Trial Proje
 
 ---
 
-##  UI Theme
+## UI Theme
 
 - **Primary:** `#1E3A8A` (indigo-800)  
 - **Accent:** `#3B82F6` (blue-500)  
@@ -87,7 +90,7 @@ A web-based Smart Parking Management system built as part of a timed Trial Proje
 
 ---
 
-##  Folder Structure
+## Folder Structure
 
 ```
 frontend/
@@ -104,7 +107,7 @@ backend/
 
 ---
 
-##  Known Limitations
+## Known Limitations
 
 - No Google Maps or location routing (out of scope due to time)  
 - Basic design only; UI polish and responsiveness can be improved  
@@ -112,20 +115,69 @@ backend/
 
 ---
 
+## Replicating the Project Locally
 
-##  Demo Walkthrough
+While the app is fully deployed, it can also be cloned and run on another machine. Follow the steps below.
 
-A demo video is available showcasing:
-- User flow (register → reserve → upload receipt)  
-- Admin flow (login → manage slots → confirm reservations)  
-- Basic analytics dashboard  
+### 1. Clone the Repository
 
----
-
-
-Built  as a timed trial project, Thank you Ingenuity for the opportunity!
+```bash
+git clone https://github.com/your-username/smart-parking.git
+cd smart-parking
+```
 
 ---
 
+### 2. Backend Setup (Django + DRF)
+
+```bash
+cd backend
+
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py migrate
+
+# (Optional) Create admin account
+python manage.py createsuperuser
+
+# Run development server
+python manage.py runserver
+```
+
+---
+
+### 3. Frontend Setup (React + Vite)
+
+```bash
+cd ../frontend
+
+# Install dependencies
+npm install
+
+# Set backend API base URL
+echo "VITE_API_URL=http://localhost:8000" > .env
+
+# Run dev server
+npm run dev
+```
+
+---
+
+### 4. Admin Login (Optional)
+
+Once up and running locally, you can access the admin features using the admin credentials you set up during `createsuperuser`.
+
+---
+
+Built as a timed trial project.  
+Thank you Ingenuity for the opportunity!
+
+---
 
 TJBA © 2025
