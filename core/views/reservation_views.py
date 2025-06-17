@@ -5,7 +5,7 @@ from django.utils.timezone import now
 from django.shortcuts import get_object_or_404
 
 from core.models import Reservation, ParkingSlot
-from core.serializers import ReservationSerializer, ReservationListSerializer
+from core.serializers import ReservationSerializer, ReservationListSerializer, ReservationAdminSerializer
 
 
 class ReservationCreateView(generics.CreateAPIView):
@@ -38,9 +38,10 @@ class AllReservationsView(generics.ListAPIView):
     """
     Admin-only: View all reservations in the system.
     """
-    queryset = Reservation.objects.all()
-    serializer_class = ReservationSerializer
+    queryset = Reservation.objects.select_related("user", "slot", "slot__location").all()
+    serializer_class = ReservationAdminSerializer
     permission_classes = [permissions.IsAdminUser]
+
 
 
 class ReservationDetailView(generics.RetrieveAPIView):

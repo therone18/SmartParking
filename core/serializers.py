@@ -128,6 +128,29 @@ class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):
 # Reservation Serializers
 # ------------------------------
 
+class ReservationAdminSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    slot = ParkingSlotSerializer(read_only=True)
+
+    class Meta:
+        model = Reservation
+        fields = [
+            'id',
+            'user',
+            'slot',
+            'start_time',
+            'end_time',
+            'last_park_in',
+            'last_park_out',
+            'status',
+            'receipt',
+            'vehicle_make',
+            'vehicle_model',
+            'plate_number',
+            'vehicle_type',
+            'created_at'
+        ]
+
 class ReservationSerializer(serializers.ModelSerializer):
     """
     Full reservation serializer used for creating or retrieving detailed reservation records.
