@@ -61,7 +61,20 @@ class ParkingLocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ParkingLocation
-        fields = ['id', 'name', 'address', 'google_maps_url', 'latitude', 'longitude', 'slot_ids', 'slots']
+        fields = [
+            'id',
+            'name',
+            'address',
+            'google_maps_url',
+            'latitude',
+            'longitude',
+            'slot_ids',
+            'slots',
+        ]
+        extra_kwargs = {
+            'slots': {'required': False},
+        }
+
 
 class ParkingLocationShortSerializer(serializers.ModelSerializer):
     """
