@@ -1,3 +1,4 @@
+// MakeReservation.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axios";
@@ -5,8 +6,13 @@ import axiosInstance from "../../services/axios";
 const MakeReservation = () => {
   const navigate = useNavigate();
 
+  // Stores all available locations
   const [locations, setLocations] = useState([]);
+
+  // Details for currently selected location (including its slots)
   const [selectedLocation, setSelectedLocation] = useState(null);
+
+  // Form state: includes all fields needed for reservation
   const [formData, setFormData] = useState({
     location: "",
     slot: "",
@@ -18,7 +24,7 @@ const MakeReservation = () => {
     vehicle_type: "",
   });
 
-  // Fetch locations on mount
+  // Fetch all parking locations on initial mount
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -31,20 +37,16 @@ const MakeReservation = () => {
     fetchLocations();
   }, []);
 
-  // Fetch slot details when a location is selected
+  // Fetch slots when a location is selected
   useEffect(() => {
     const fetchSlotDetails = async () => {
       if (formData.location) {
         try {
-          console.log("fetching location's slots");
-          const res = await axiosInstance.get(
-            `/api/locations/${formData.location}/`
-          );
+          const res = await axiosInstance.get(`/api/locations/${formData.location}/`);
           setSelectedLocation(res.data);
-          console.log(res.data);
-          console.log(selectedLocation)
         } catch (error) {
           console.error("Error fetching location details:", error);
+          setSelectedLocation(null);
         }
       } else {
         setSelectedLocation(null);
@@ -53,28 +55,26 @@ const MakeReservation = () => {
     fetchSlotDetails();
   }, [formData.location]);
 
-  // Update any form field
+  // Handle text or select input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Slot selection
+  // Handle slot selection
   const handleSlotSelect = (slotId) => {
     setFormData((prev) => ({ ...prev, slot: slotId }));
   };
 
-  // Submit reservation
+  // Submit reservation form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await axiosInstance.post("/api/reservations/", formData);
+      // Redirect to payment page
       navigate(`/payment/${res.data.id}`);
     } catch (error) {
-      console.error(
-        "Reservation failed:",
-        error.response?.data || error.message
-      );
+      console.error("Reservation failed:", error.response?.data || error.message);
       alert("Reservation failed. Please try again.");
     }
   };
@@ -87,7 +87,7 @@ const MakeReservation = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Location selection */}
+          {/* Location Dropdown */}
           <div>
             <label className="block mb-1 text-sm font-medium text-slate-700">
               Select Location
@@ -108,7 +108,7 @@ const MakeReservation = () => {
             </select>
           </div>
 
-          {/* Slot selection visual */}
+          {/* Slot Visual Selector */}
           {selectedLocation?.slots?.length > 0 && (
             <div>
               <label className="block mb-2 font-medium text-slate-700">
@@ -136,7 +136,7 @@ const MakeReservation = () => {
             </div>
           )}
 
-          {/* Time inputs */}
+          {/* Start/End Time Inputs */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block mb-1 text-sm font-medium text-slate-700">
@@ -166,7 +166,7 @@ const MakeReservation = () => {
             </div>
           </div>
 
-          {/* Vehicle info */}
+          {/* Vehicle Information Inputs */}
           <div className="grid grid-cols-2 gap-4">
             <input
               name="vehicle_make"
@@ -202,7 +202,7 @@ const MakeReservation = () => {
             />
           </div>
 
-          {/* Submit & Cancel buttons */}
+          {/* Submit and Cancel Buttons */}
           <button
             type="submit"
             className="w-full bg-indigo-800 hover:bg-indigo-900 text-white py-2 rounded shadow transition"

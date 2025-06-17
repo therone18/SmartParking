@@ -1,23 +1,23 @@
+// Login.jsx
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../../services/axios";
-import { Link } from "react-router-dom";
 
 const Login = () => {
-
-  
   const navigate = useNavigate();
 
+  // Local state for form inputs
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  // Optional: Check if backend is reachable on mount
   useEffect(() => {
     const testBackendConnection = async () => {
       try {
-        const res = await axiosInstance.get("/api/test-cors/");  // Or "/api/ping/"
+        const res = await axiosInstance.get("/api/test-cors/");
         console.log("✅ Backend reachable:", res.data);
       } catch (error) {
-        console.error("❌ CORS or backend error:", error);
+        console.error("❌ Backend/CORS error:", error);
         alert("Backend is not responding or blocked by CORS.");
       }
     };
@@ -35,25 +35,27 @@ const Login = () => {
         password,
       });
 
+      // Store tokens in localStorage
       localStorage.setItem("access", response.data.access);
       localStorage.setItem("refresh", response.data.refresh);
 
-      console.log("Login successful!");
+      console.log("✅ Login successful");
       navigate("/dashboard");
     } catch (error) {
-      console.error("Login failed:", error.response?.data || error.message);
+      console.error("❌ Login failed:", error.response?.data || error.message);
       alert("Login failed. Please check your credentials.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-50">
+    <div className="flex items-center justify-center min-h-screen bg-slate-50 px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-800">
-          Be Smart, Start Parng.
+        <h2 className="text-3xl font-bold text-center text-indigo-800 mb-6">
+          Be Smart, Start Parking.
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Username Field */}
+          {/* Username */}
           <div>
             <label
               htmlFor="username"
@@ -71,7 +73,7 @@ const Login = () => {
             />
           </div>
 
-          {/* Password Field */}
+          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -89,7 +91,7 @@ const Login = () => {
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
             className="w-full py-2 px-4 bg-indigo-800 text-white font-semibold rounded-md hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-800"
@@ -97,13 +99,15 @@ const Login = () => {
             Login
           </button>
         </form>
+
+        {/* Register Link */}
         <div className="mt-6 text-center text-sm text-slate-900">
-          Don't have an account?{" "}
+          Don’t have an account?{" "}
           <Link
             to="/register"
             className="text-blue-500 font-medium hover:underline"
           >
-            Sign Up To Start Parking
+            Sign Up to Start Parking
           </Link>
         </div>
       </div>

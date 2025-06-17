@@ -11,6 +11,7 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
+  // Fetch data on mount: reservations, profile, locations
   useEffect(() => {
     const getData = async () => {
       try {
@@ -22,6 +23,7 @@ const Dashboard = () => {
 
         const all = Array.isArray(res1.data.data) ? res1.data.data : [];
 
+        // Separate active and recent (completed/checked-out) reservations
         setReservations(all.filter((r) => r.status === "Active"));
 
         setRecent(
@@ -55,6 +57,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Greeting */}
         <h1 className="text-3xl font-bold text-slate-900 mb-6">
           Welcome back, {profile.first_name || "User"}!
         </h1>
@@ -171,12 +174,13 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Footer */}
         <footer className="text-sm text-gray-500 text-center mt-12">
           &copy; 2025 Smart Parking App | TJBA
         </footer>
       </div>
 
-      {/* Floating quick actions */}
+      {/* Floating Action Buttons (e.g., Logout / Reserve) */}
       <QuickActions onLogout={handleLogout} />
     </div>
   );

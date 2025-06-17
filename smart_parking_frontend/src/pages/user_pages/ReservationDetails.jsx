@@ -1,3 +1,4 @@
+// ReservationDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axios";
@@ -7,21 +8,22 @@ const ReservationDetails = () => {
   const navigate = useNavigate();
   const [reservation, setReservation] = useState(null);
 
-  // Fetch reservation details
+  // Fetch reservation details when component mounts or ID changes
   useEffect(() => {
     const fetchReservation = async () => {
       try {
         const res = await axiosInstance.get(`/api/reservations/${id}/`);
         setReservation(res.data);
-        console.log(reservation);
       } catch (error) {
-        console.error("Failed to fetch reservation:", error);
+        console.error("Failed to fetch reservation:", error.response?.data || error.message);
         alert("Failed to load reservation.");
       }
     };
+
     fetchReservation();
   }, [id]);
 
+  // Show loading text if data hasn't loaded yet
   if (!reservation) {
     return (
       <div className="text-center py-10 text-gray-600">
@@ -41,7 +43,7 @@ const ReservationDetails = () => {
         <div className="space-y-3 text-sm sm:text-base">
           <DetailRow label="Location" value={reservation.location?.name} />
           <DetailRow label="Address" value={reservation.location?.address} />
-          <DetailRow label="Slot ID" value={reservation.slot} />
+          <DetailRow label="Slot ID" value={reservation.slot_id || reservation.slot} />
           <DetailRow
             label="Start Time"
             value={new Date(reservation.start_time).toLocaleString()}
@@ -70,7 +72,7 @@ const ReservationDetails = () => {
           />
         </div>
 
-        {/* Vehicle Info */}
+        {/* Vehicle Information */}
         <hr className="my-5" />
         <h3 className="text-lg font-semibold text-slate-900 mb-2">Vehicle Info</h3>
         <div className="space-y-2 text-sm sm:text-base">
@@ -80,7 +82,7 @@ const ReservationDetails = () => {
           <DetailRow label="Type" value={reservation.vehicle_type} />
         </div>
 
-        {/* Receipt Image */}
+        {/* Receipt Image (if uploaded) */}
         {reservation.receipt && (
           <>
             <hr className="my-5" />
@@ -95,7 +97,7 @@ const ReservationDetails = () => {
           </>
         )}
 
-        {/* Back Button */}
+        {/* Back Navigation */}
         <button
           onClick={() => navigate("/dashboard")}
           className="mt-6 w-full bg-gray-200 hover:bg-gray-300 text-slate-900 py-2 rounded transition"
@@ -107,7 +109,7 @@ const ReservationDetails = () => {
   );
 };
 
-// 🔁 Row component to display a label and value
+// 🔁 Row component for reusable field display
 const DetailRow = ({ label, value }) => (
   <div className="flex justify-between gap-4 border-b pb-1">
     <span className="text-slate-600 font-medium">{label}:</span>

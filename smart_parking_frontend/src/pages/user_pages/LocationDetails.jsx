@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axiosInstance from '../../services/axios';
+// LocationDetails.jsx
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axiosInstance from "../../services/axios";
 
 const LocationDetails = () => {
-  const { id } = useParams(); // Extract location ID from URL
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  // Fetch location details from API on component mount
+  // Fetch specific location details by ID
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -18,7 +19,7 @@ const LocationDetails = () => {
         setLocation(res.data);
       } catch (err) {
         console.error("Error fetching location details:", err);
-        setError('Failed to fetch location details.');
+        setError("Failed to load location details.");
       } finally {
         setLoading(false);
       }
@@ -27,56 +28,57 @@ const LocationDetails = () => {
     fetchLocation();
   }, [id]);
 
-  // Show loading spinner
+  // Loading State
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-lg font-medium text-gray-700">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-lg font-medium text-slate-700">Loading...</p>
       </div>
     );
   }
 
-  // Show error message
+  // Error State
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-red-600">{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-red-600 font-medium">{error}</p>
       </div>
     );
   }
 
-  // Display location details
+  // Render location info
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">
-          {location.name || "Location Name"}
+    <div className="min-h-screen bg-slate-50 py-10 px-4">
+      <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow">
+        <h1 className="text-3xl font-bold text-slate-900 mb-4">
+          {location.name}
         </h1>
 
-        <p className="text-gray-700 mb-2">
-          <span className="font-medium">Address:</span> {location.address || "No address provided"}
+        <p className="text-slate-800 mb-2">
+          <span className="font-semibold">Address:</span> {location.address}
         </p>
 
+        {/* Google Maps Link */}
         {location.google_maps_link && (
-          <p className="text-blue-600 mb-4">
+          <p className="mb-4">
             <a
               href={location.google_maps_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline"
+              className="text-blue-500 hover:underline"
             >
               View on Google Maps
             </a>
           </p>
         )}
 
-        {/* Navigation Button */}
+        {/* Go Back Button */}
         <div className="mt-6">
           <button
-            onClick={() => navigate('/dashboard')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded"
+            onClick={() => navigate("/dashboard")}
+            className="bg-gray-200 hover:bg-gray-300 text-slate-800 font-medium py-2 px-4 rounded transition"
           >
-            Go Back to Dashboard
+            ← Back to Dashboard
           </button>
         </div>
       </div>

@@ -1,16 +1,17 @@
+// Payment.jsx
 import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../../services/axios";
 import sampleQR from "../../assets/images/sample_qr.png";
 
 const Payment = () => {
-  const { id } = useParams(); // Reservation ID
+  const { id } = useParams(); // Reservation ID from route
   const navigate = useNavigate();
 
-  const [receipt, setReceipt] = useState(null);
-  const [uploadSuccess, setUploadSuccess] = useState(false); // Track if upload was successful
+  const [receipt, setReceipt] = useState(null); // Uploaded receipt file
+  const [uploadSuccess, setUploadSuccess] = useState(false); // Show confirmation UI
 
-  // Handle file submission
+  // Submit uploaded receipt to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -23,13 +24,14 @@ const Payment = () => {
     formData.append("receipt", receipt);
 
     try {
+      // PATCH request to upload receipt
       await axiosInstance.patch(`/api/reservations/${id}/upload-receipt/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      setUploadSuccess(true);
+      setUploadSuccess(true); // Switch to success UI
     } catch (error) {
       console.error("Error uploading receipt:", error);
       alert("Failed to upload receipt. Try again.");
@@ -43,16 +45,19 @@ const Payment = () => {
           Upload Payment Receipt
         </h1>
 
-        {/* Simulated QR Code */}
+        {/* Simulated QR code instructions */}
         <div className="mb-6 text-center">
           <img src={sampleQR} alt="QR Code" className="w-64 mx-auto mb-4" />
           <p className="text-gray-600 mt-2">
             Scan the QR code above to pay via your preferred PH wallet.
           </p>
-          <p className="text-red-500 text-sm font-medium mt-1">* This is a simulated QR *</p>
+          <p className="text-red-500 text-sm font-medium mt-1">
+            * This is a simulated QR *
+          </p>
         </div>
 
         {!uploadSuccess ? (
+          // File Upload Form
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -83,6 +88,7 @@ const Payment = () => {
             </button>
           </form>
         ) : (
+          // Success Message UI
           <div className="text-center space-y-4">
             <p className="text-green-600 font-semibold">
               Receipt uploaded successfully! Your reservation is now being processed.
