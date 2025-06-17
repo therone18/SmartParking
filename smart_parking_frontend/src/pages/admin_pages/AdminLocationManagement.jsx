@@ -26,7 +26,10 @@ const AdminLocationManagement = () => {
       return;
     }
     try {
-      await axiosInstance.post("/api/locations/", newLocation);
+      await axiosInstance.post("/api/locations/", {
+        ...newLocation,
+        slots: 0, // ✅ add default slots to avoid backend 400
+      });
       setNewLocation({ name: "", address: "" });
       fetchLocationsWithSlots();
     } catch (error) {
@@ -44,7 +47,9 @@ const AdminLocationManagement = () => {
 
     try {
       for (let i = 0; i < count; i++) {
-        await axiosInstance.post("/api/slots/create/", { location: locationId });
+        await axiosInstance.post("/api/slots/create/", {
+          location: locationId,
+        });
       }
       setNewSlotCounts((prev) => ({ ...prev, [locationId]: "" }));
       fetchLocationsWithSlots();
@@ -67,7 +72,12 @@ const AdminLocationManagement = () => {
 
   // Delete a location
   const deleteLocation = async (locationId) => {
-    if (!window.confirm("This will delete ALL slots and reservations tied to this location. Proceed?")) return;
+    if (
+      !window.confirm(
+        "This will delete ALL slots and reservations tied to this location. Proceed?"
+      )
+    )
+      return;
     try {
       await axiosInstance.delete(`/api/locations/${locationId}/`);
       fetchLocationsWithSlots();
@@ -98,25 +108,33 @@ const AdminLocationManagement = () => {
 
   return (
     <div className="p-6 space-y-10">
-      <h1 className="text-2xl font-bold text-slate-900">Admin Location Dashboard</h1>
+      <h1 className="text-2xl font-bold text-slate-900">
+        Admin Location Dashboard
+      </h1>
 
       {/* Create new location form */}
       <div className="bg-white p-4 rounded shadow border">
-        <h2 className="text-lg font-semibold text-indigo-800 mb-2">Create New Location</h2>
+        <h2 className="text-lg font-semibold text-indigo-800 mb-2">
+          Create New Location
+        </h2>
         <div className="flex flex-col sm:flex-row gap-3">
           <input
             className="border p-2 rounded w-full"
             type="text"
             placeholder="Name"
             value={newLocation.name}
-            onChange={(e) => setNewLocation({ ...newLocation, name: e.target.value })}
+            onChange={(e) =>
+              setNewLocation({ ...newLocation, name: e.target.value })
+            }
           />
           <input
             className="border p-2 rounded w-full"
             type="text"
             placeholder="Address"
             value={newLocation.address}
-            onChange={(e) => setNewLocation({ ...newLocation, address: e.target.value })}
+            onChange={(e) =>
+              setNewLocation({ ...newLocation, address: e.target.value })
+            }
           />
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -135,7 +153,9 @@ const AdminLocationManagement = () => {
           <div key={location.id} className="bg-white p-6 rounded shadow border">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <h2 className="text-xl font-semibold text-indigo-800">{location.name}</h2>
+                <h2 className="text-xl font-semibold text-indigo-800">
+                  {location.name}
+                </h2>
                 <p className="text-sm text-gray-600">{location.address}</p>
               </div>
               <button
@@ -154,7 +174,10 @@ const AdminLocationManagement = () => {
                 placeholder="Slots"
                 value={newSlotCounts[location.id] || ""}
                 onChange={(e) =>
-                  setNewSlotCounts({ ...newSlotCounts, [location.id]: e.target.value })
+                  setNewSlotCounts({
+                    ...newSlotCounts,
+                    [location.id]: e.target.value,
+                  })
                 }
               />
               <button
