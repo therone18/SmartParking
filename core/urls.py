@@ -18,6 +18,7 @@ urlpatterns = [
     #  Parking Locations
     # -------------------------------
     path('locations/', views.ParkingLocationListCreateView.as_view(), name='location-list-create'),
+    path('locations/<int:pk>/delete/', views.AdminDeleteLocationView.as_view(), name='admin-delete-location'),
     path('locations/search/', views.ParkingLocationSearchView.as_view(), name='location-search'),
     path('locations/<int:pk>/', views.ParkingLocationDetailView.as_view(), name='location-detail'),
     path('locations/<int:pk>/reservations/', views.LocationReservationsView.as_view(), name='location-reservations'),
