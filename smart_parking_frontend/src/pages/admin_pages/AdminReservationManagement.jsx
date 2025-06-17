@@ -72,7 +72,7 @@ const AdminReservationManagement = () => {
                     </span>{" "}
                     -{" "}
                     <span className="italic">
-                      {res.car ? `${res.car.make} ${res.car.model}` : <span className="text-red-600">[No car]</span>}
+                      {res.car ? `${res.car.vehicle_make} ${res.car.vehicle_model}` : <span className="text-red-600">[No car]</span>}
                     </span>
                   </p>
                   <p className="text-sm text-yellow-700">
@@ -128,7 +128,7 @@ const AdminReservationManagement = () => {
                 <td className="border px-3 py-1">
                   {res.car ? (
                     <>
-                      {res.car.make} {res.car.model}
+                      {res.car.vehicle_make} {res.car.vehicle_model}
                       <br />
                       <small className="text-xs text-gray-500">{res.car.plate_number}</small>
                     </>

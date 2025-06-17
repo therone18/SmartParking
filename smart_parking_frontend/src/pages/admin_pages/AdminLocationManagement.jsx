@@ -233,7 +233,7 @@ const SlotCard = ({ slot, onToggle, onDelete }) => {
             </p>
             <p>
               <span className="font-medium">Car:</span>{" "}
-              {occupant.car.make} {occupant.car.model} – {occupant.car.plate_number}
+              {occupant.car.vehicle_make} {occupant.car.vehicle_model} – {occupant.car.plate_number}
             </p>
           </div>
         )}
