@@ -31,6 +31,22 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        
+        
+# ------------------------------
+# Parking Slot Serializers
+# ------------------------------
+
+class ParkingSlotSerializer(serializers.ModelSerializer):
+    """
+    Serializer for individual parking slots.
+    Used in admin panel and slot listings.
+    """
+    class Meta:
+        model = ParkingSlot
+        fields = ['id', 'location', 'slot_id', 'floorzone_number', 'is_available', 'locked']
+        read_only_fields = ['id', 'slot_id']
+        
 
 # ------------------------------
 # Parking Location Serializers
@@ -74,19 +90,6 @@ class ParkingLocationWithSlotsSerializer(serializers.ModelSerializer):
             'longitude'
         ]
 
-# ------------------------------
-# Parking Slot Serializers
-# ------------------------------
-
-class ParkingSlotSerializer(serializers.ModelSerializer):
-    """
-    Serializer for individual parking slots.
-    Used in admin panel and slot listings.
-    """
-    class Meta:
-        model = ParkingSlot
-        fields = ['id', 'location', 'slot_id', 'floorzone_number', 'is_available', 'locked']
-        read_only_fields = ['id', 'slot_id']
 
 # ------------------------------
 # Reservation Serializers
