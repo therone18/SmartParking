@@ -122,7 +122,7 @@ While the app is fully deployed, it can also be cloned and run on another machin
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/smart-parking.git
+git clone https://github.com/therone18/smart-parking.git
 cd smart-parking
 ```
 
