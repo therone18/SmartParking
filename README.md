@@ -175,9 +175,5 @@ Once up and running locally, you can access the admin features using the admin c
 
 ---
 
-Built as a timed trial project.  
-Thank you Ingenuity for the opportunity!
-
----
 
 TJBA © 2025
