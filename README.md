@@ -1,7 +1,7 @@
 
 # Smart Parking App (MVP)
 
-A web-based Smart Parking Management system built as part of a timed Trial Project. It allows users to reserve parking slots and upload payment receipts, while admins can manage locations, slots, users, and view analytics.
+A web-based Smart Parking Management system. It allows users to reserve parking slots and upload payment receipts, while admins can manage locations, slots, users, and view analytics.
 
 ---
 
